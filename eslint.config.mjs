@@ -22,7 +22,8 @@ export default [
       '**/dist/',
       '**/node_modules/',
       '**/coverage/',
-      '**/prisma/'
+      '**/prisma/',
+      '**/generated/'
     ]
   },
   ...compat.extends(

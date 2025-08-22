@@ -7,11 +7,21 @@
     "esModuleInterop": true,
     "skipLibCheck": true,
     "resolveJsonModule": true,
-    "types": ["node"],
+    "types": [
+      "node"
+    ],
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": [
+        "./src/*"
+      ]
     }
   },
-  "include": ["./src", "**/*.ts"],
-  "exclude": ["./node_modules"]
+  "include": [
+    "./src",
+    "**/*.ts"
+  ],
+  "exclude": [
+    "./node_modules",
+    "./generated"
+  ]
 }
