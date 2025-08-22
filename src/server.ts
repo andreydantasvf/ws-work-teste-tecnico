@@ -1,3 +1,13 @@
+import { errorHandler } from '@/core/webserver/error-handler';
+import App from '@/core/webserver/app';
 import { env } from '@/core/config/env';
 
-console.log(`Server is running on port ${env.API_PORT}`);
+export const app = new App({
+  routes: []
+});
+
+errorHandler(app.getApp());
+
+if (env.NODE_ENV !== 'test') {
+  app.listen();
+}
