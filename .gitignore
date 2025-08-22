@@ -22,7 +22,6 @@ build/
 # Prisma
 prisma/*.db
 prisma/.env
-prisma/migrations/
 
 # Test coverage
 coverage/
