@@ -4,15 +4,15 @@ services:
   api:
     container_name: node_api
     build:
-      context: .
+      context: ./backend-nodejs
       target: dev
     ports:
       - '${API_PORT}:${API_PORT}'
     volumes:
-      - ./src:/app/src
-      - ./prisma:/app/prisma
+      - ./backend-nodejs/src:/app/src
+      - ./backend-nodejs/prisma:/app/prisma
     env_file:
-      - .env
+      - ./backend-nodejs/.env
     depends_on:
       db:
         condition: service_healthy
@@ -24,7 +24,7 @@ services:
     container_name: postgres_db
     restart: always
     env_file:
-      - .env
+      - ./backend-nodejs/.env
     ports:
       - '${DB_PORT}:${DB_PORT}'
     volumes:
