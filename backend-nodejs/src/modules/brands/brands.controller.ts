@@ -12,10 +12,10 @@ export class BrandsController {
   public async createBrand(
     request: FastifyRequest,
     reply: FastifyReply
-  ): Promise<IBrand> {
+  ): Promise<void> {
     const { name } = request.body as IBrand;
     const newBrand = await this.brandsService.createBrand({ name });
-    return reply.status(201).send({
+    reply.status(201).send({
       success: true,
       data: newBrand
     });
@@ -24,9 +24,9 @@ export class BrandsController {
   public async getAllBrands(
     _request: FastifyRequest,
     reply: FastifyReply
-  ): Promise<IBrand[]> {
+  ): Promise<void> {
     const brands = await this.brandsService.getAllBrands();
-    return reply.status(200).send({
+    reply.status(200).send({
       success: true,
       data: brands
     });
@@ -35,10 +35,10 @@ export class BrandsController {
   public async getBrandById(
     request: FastifyRequest,
     reply: FastifyReply
-  ): Promise<IBrand> {
+  ): Promise<void> {
     const { id } = request.params as { id: number };
     const brand = await this.brandsService.getBrandById(id);
-    return reply.status(200).send({
+    reply.status(200).send({
       success: true,
       data: brand
     });
@@ -47,11 +47,11 @@ export class BrandsController {
   public async updateBrand(
     request: FastifyRequest,
     reply: FastifyReply
-  ): Promise<IBrand> {
+  ): Promise<void> {
     const { id } = request.params as { id: number };
     const { name } = request.body as IBrand;
     const updatedBrand = await this.brandsService.updateBrand(id, { name });
-    return reply.status(200).send({
+    reply.status(200).send({
       success: true,
       data: updatedBrand
     });
@@ -63,6 +63,6 @@ export class BrandsController {
   ): Promise<void> {
     const { id } = request.params as { id: number };
     await this.brandsService.deleteBrand(id);
-    return reply.status(200).send({ success: true, data: null });
+    reply.status(200).send({ success: true, data: null });
   }
 }
