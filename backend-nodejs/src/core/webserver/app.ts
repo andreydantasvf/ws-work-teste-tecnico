@@ -5,7 +5,7 @@ import {
   serializerCompiler,
   validatorCompiler
 } from 'fastify-type-provider-zod';
-import fastifySwaggerUi from '@fastify/swagger-ui';
+import fastifyApiReference from '@scalar/fastify-api-reference';
 import cors from '@fastify/cors';
 import helmet from '@fastify/helmet';
 import { env } from '@/core/config/env';
@@ -51,11 +51,32 @@ class App {
     this.app.register(fastifySwagger, {
       openapi: {
         info: {
-          title: 'WS Work API - Documentação',
-          description: 'Documentação da API do teste backend da WS Work',
-          version: '1.0.0'
+          title: 'API WS-Work - Teste Técnico',
+          description:
+            'Documentação completa da API para gerenciamento de veículos.',
+          version: '1.0.0',
+          contact: {
+            name: 'Suporte API',
+            email: 'andreydantasvf@gmail.com'
+          },
+          license: {
+            name: 'MIT',
+            url: 'https://opensource.org/licenses/MIT'
+          }
         },
-        servers: []
+        servers: [
+          {
+            url: `http://localhost:${this.app_port}`,
+            description: 'Servidor de desenvolvimento'
+          }
+        ],
+        tags: [
+          {
+            name: 'Marcas',
+            description:
+              'Operações relacionadas ao gerenciamento de marcas de veículos'
+          }
+        ]
       },
       transform: jsonSchemaTransform
     });
@@ -67,11 +88,19 @@ class App {
       done();
     });
 
-    this.app.register(fastifySwaggerUi, {
+    this.app.register(fastifyApiReference, {
       routePrefix: '/docs',
-      uiConfig: {
-        docExpansion: 'full',
-        deepLinking: false
+      configuration: {
+        theme: 'kepler',
+        spec: {
+          url: '/documentation/json'
+        },
+        metaData: {
+          title: 'API do Teste Técnico - WS Work',
+          description: 'Documentação interativa da API',
+          ogDescription:
+            'Documentação completa da API para gerenciamento de veículos'
+        }
       }
     });
 
@@ -88,6 +117,10 @@ class App {
 
     this.app.get('/healthcheck', async (_request, reply) => {
       reply.send({ healthcheck: 'server is alive' });
+    });
+
+    this.app.get('/documentation/json', async (_request, _reply) => {
+      return this.app.swagger();
     });
   }
 
