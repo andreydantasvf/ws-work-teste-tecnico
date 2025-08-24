@@ -4,6 +4,20 @@ import { FastifyInstance } from 'fastify';
 import { createTestApp, closeTestApp } from '../helpers/app.helper';
 import { prisma } from '../setup';
 
+interface CarResponse {
+  id: number;
+  color: string;
+  year: number;
+  numberOfPorts: number;
+  fuel: string;
+  modelId: number;
+  model: {
+    brand: {
+      name: string;
+    };
+  };
+}
+
 describe('Cars Endpoints Integration Tests', () => {
   let app: FastifyInstance;
   let testBrand: { id: number; name: string };
@@ -686,6 +700,319 @@ describe('Cars Endpoints Integration Tests', () => {
       await request(app.server).delete(`/api/cars/${carId}`).expect(200);
 
       await request(app.server).get(`/api/cars/${carId}`).expect(404);
+    });
+  });
+
+  describe('GET /api/cars com filtros', () => {
+    beforeEach(async () => {
+      // Criar dados de teste para filtros
+      const anotherBrand = await prisma.brand.create({
+        data: { name: 'Filter Test Brand' }
+      });
+
+      const anotherModel = await prisma.model.create({
+        data: {
+          name: 'Filter Test Model',
+          brandId: anotherBrand.id,
+          fipeValue: 60000
+        }
+      });
+
+      await prisma.cars.createMany({
+        data: [
+          {
+            color: 'Vermelho',
+            year: 2020,
+            numberOfPorts: 4,
+            fuel: 'Gasolina',
+            modelId: testModel.id
+          },
+          {
+            color: 'Azul',
+            year: 2021,
+            numberOfPorts: 2,
+            fuel: 'Etanol',
+            modelId: testModel.id
+          },
+          {
+            color: 'Vermelho',
+            year: 2022,
+            numberOfPorts: 4,
+            fuel: 'Flex',
+            modelId: anotherModel.id
+          },
+          {
+            color: 'Preto',
+            year: 2019,
+            numberOfPorts: 4,
+            fuel: 'Gasolina',
+            modelId: testModel.id
+          },
+          {
+            color: 'Branco',
+            year: 2023,
+            numberOfPorts: 2,
+            fuel: 'Híbrido',
+            modelId: anotherModel.id
+          }
+        ]
+      });
+    });
+
+    it('deve filtrar carros por cor', async () => {
+      const response = await request(app.server)
+        .get('/api/cars?color=Vermelho')
+        .expect(200);
+
+      expect(response.body.data).toHaveLength(2);
+      response.body.data.forEach((car: CarResponse) => {
+        expect(car.color).toBe('Vermelho');
+      });
+    });
+
+    it('deve filtrar carros por ano específico', async () => {
+      const response = await request(app.server)
+        .get('/api/cars?year=2021')
+        .expect(200);
+
+      expect(response.body.data).toHaveLength(1);
+      expect(response.body.data[0].year).toBe(2021);
+      expect(response.body.data[0].color).toBe('Azul');
+    });
+
+    it('deve filtrar carros por range de anos', async () => {
+      const response = await request(app.server)
+        .get('/api/cars?yearGte=2020&yearLte=2022')
+        .expect(200);
+
+      expect(response.body.data).toHaveLength(3);
+      response.body.data.forEach((car: CarResponse) => {
+        expect(car.year).toBeGreaterThanOrEqual(2020);
+        expect(car.year).toBeLessThanOrEqual(2022);
+      });
+    });
+
+    it('deve filtrar carros por ano mínimo', async () => {
+      const response = await request(app.server)
+        .get('/api/cars?yearGte=2022')
+        .expect(200);
+
+      expect(response.body.data).toHaveLength(2);
+      response.body.data.forEach((car: CarResponse) => {
+        expect(car.year).toBeGreaterThanOrEqual(2022);
+      });
+    });
+
+    it('deve filtrar carros por ano máximo', async () => {
+      const response = await request(app.server)
+        .get('/api/cars?yearLte=2020')
+        .expect(200);
+
+      expect(response.body.data).toHaveLength(2);
+      response.body.data.forEach((car: CarResponse) => {
+        expect(car.year).toBeLessThanOrEqual(2020);
+      });
+    });
+
+    it('deve filtrar carros por combustível', async () => {
+      const response = await request(app.server)
+        .get('/api/cars?fuel=Gasolina')
+        .expect(200);
+
+      expect(response.body.data).toHaveLength(2);
+      response.body.data.forEach((car: CarResponse) => {
+        expect(car.fuel).toBe('Gasolina');
+      });
+    });
+
+    it('deve filtrar carros por número de portas', async () => {
+      const response = await request(app.server)
+        .get('/api/cars?numberOfPorts=2')
+        .expect(200);
+
+      expect(response.body.data).toHaveLength(2);
+      response.body.data.forEach((car: CarResponse) => {
+        expect(car.numberOfPorts).toBe(2);
+      });
+    });
+
+    it('deve filtrar carros por modelo específico', async () => {
+      const response = await request(app.server)
+        .get(`/api/cars?modelId=${testModel.id}`)
+        .expect(200);
+
+      expect(response.body.data).toHaveLength(3);
+      response.body.data.forEach((car: CarResponse) => {
+        expect(car.modelId).toBe(testModel.id);
+      });
+    });
+
+    it('deve filtrar carros por nome da marca', async () => {
+      const response = await request(app.server)
+        .get('/api/cars?brandName=Filter Test Brand')
+        .expect(200);
+
+      expect(response.body.data).toHaveLength(2);
+      response.body.data.forEach((car: CarResponse) => {
+        expect(car.model.brand.name).toBe('Filter Test Brand');
+      });
+    });
+
+    it('deve combinar múltiplos filtros', async () => {
+      const response = await request(app.server)
+        .get('/api/cars?color=Vermelho&numberOfPorts=4')
+        .expect(200);
+
+      expect(response.body.data).toHaveLength(2);
+      response.body.data.forEach((car: CarResponse) => {
+        expect(car.color).toBe('Vermelho');
+        expect(car.numberOfPorts).toBe(4);
+      });
+    });
+
+    it('deve ordenar carros por ano crescente', async () => {
+      const response = await request(app.server)
+        .get('/api/cars?sortBy=year&order=asc')
+        .expect(200);
+
+      expect(response.body.data).toHaveLength(5);
+      const years = response.body.data.map((car: CarResponse) => car.year);
+      expect(years).toEqual([2019, 2020, 2021, 2022, 2023]);
+    });
+
+    it('deve ordenar carros por ano decrescente', async () => {
+      const response = await request(app.server)
+        .get('/api/cars?sortBy=year&order=desc')
+        .expect(200);
+
+      expect(response.body.data).toHaveLength(5);
+      const years = response.body.data.map((car: CarResponse) => car.year);
+      expect(years).toEqual([2023, 2022, 2021, 2020, 2019]);
+    });
+
+    it('deve ordenar carros por cor', async () => {
+      const response = await request(app.server)
+        .get('/api/cars?sortBy=color&order=asc')
+        .expect(200);
+
+      expect(response.body.data).toHaveLength(5);
+      const colors = response.body.data.map((car: CarResponse) => car.color);
+      expect(colors[0]).toBe('Azul');
+      expect(colors[colors.length - 1]).toBe('Vermelho');
+    });
+
+    it('deve implementar paginação', async () => {
+      const page1Response = await request(app.server)
+        .get('/api/cars?page=1&limit=2')
+        .expect(200);
+
+      expect(page1Response.body.data).toHaveLength(2);
+
+      const page2Response = await request(app.server)
+        .get('/api/cars?page=2&limit=2')
+        .expect(200);
+
+      expect(page2Response.body.data).toHaveLength(2);
+
+      // Verificar que são carros diferentes
+      const page1Ids = page1Response.body.data.map(
+        (car: CarResponse) => car.id
+      );
+      const page2Ids = page2Response.body.data.map(
+        (car: CarResponse) => car.id
+      );
+      expect(page1Ids).not.toEqual(page2Ids);
+    });
+
+    it('deve retornar array vazio para filtros que não correspondem', async () => {
+      const response = await request(app.server)
+        .get('/api/cars?color=Rosa')
+        .expect(200);
+
+      expect(response.body.data).toHaveLength(0);
+    });
+
+    it('deve fazer busca case-insensitive para cor', async () => {
+      const response = await request(app.server)
+        .get('/api/cars?color=vermelho')
+        .expect(200);
+
+      expect(response.body.data).toHaveLength(2);
+      response.body.data.forEach((car: CarResponse) => {
+        expect(car.color.toLowerCase()).toContain('vermelho');
+      });
+    });
+
+    it('deve fazer busca case-insensitive para combustível', async () => {
+      const response = await request(app.server)
+        .get('/api/cars?fuel=gasolina')
+        .expect(200);
+
+      expect(response.body.data).toHaveLength(2);
+      response.body.data.forEach((car: CarResponse) => {
+        expect(car.fuel.toLowerCase()).toContain('gasolina');
+      });
+    });
+
+    it('deve fazer busca case-insensitive para nome da marca', async () => {
+      const response = await request(app.server)
+        .get('/api/cars?brandName=filter test brand')
+        .expect(200);
+
+      expect(response.body.data).toHaveLength(2);
+    });
+
+    it('deve aceitar busca parcial por cor', async () => {
+      const response = await request(app.server)
+        .get('/api/cars?color=Ver')
+        .expect(200);
+
+      expect(response.body.data).toHaveLength(2);
+      response.body.data.forEach((car: CarResponse) => {
+        expect(car.color).toContain('Vermelho');
+      });
+    });
+
+    it('deve lidar com parâmetros de query inválidos graciosamente', async () => {
+      const response = await request(app.server)
+        .get('/api/cars?year=abc&numberOfPorts=invalid')
+        .expect(400);
+
+      expect(response.body).toHaveProperty('message');
+    });
+
+    it('deve combinar filtros, ordenação e paginação', async () => {
+      const response = await request(app.server)
+        .get('/api/cars?numberOfPorts=4&sortBy=year&order=desc&page=1&limit=2')
+        .expect(200);
+
+      expect(response.body.data).toHaveLength(2);
+      response.body.data.forEach((car: CarResponse) => {
+        expect(car.numberOfPorts).toBe(4);
+      });
+
+      // Verificar ordenação
+      const years = response.body.data.map((car: CarResponse) => car.year);
+      expect(years[0]).toBeGreaterThanOrEqual(years[1]);
+    });
+
+    it('deve retornar todos os carros quando não há filtros', async () => {
+      const response = await request(app.server).get('/api/cars').expect(200);
+
+      expect(response.body.data).toHaveLength(5);
+    });
+
+    it('deve incluir dados do modelo e marca nos resultados filtrados', async () => {
+      const response = await request(app.server)
+        .get('/api/cars?color=Vermelho')
+        .expect(200);
+
+      expect(response.body.data).toHaveLength(2);
+      response.body.data.forEach((car: CarResponse) => {
+        expect(car).toHaveProperty('model');
+        expect(car.model).toHaveProperty('brand');
+        expect(car.model.brand).toHaveProperty('name');
+      });
     });
   });
 });

@@ -1,6 +1,6 @@
 import { AppError } from '@/core/webserver/app-error';
 import { CarsRepository } from './cars.repository';
-import { type ICar, type ICarRepository } from './cars.types';
+import { type ICar, type ICarRepository, type ICarsFilter } from './cars.types';
 
 export class CarsService {
   private repository: ICarRepository;
@@ -39,5 +39,9 @@ export class CarsService {
       throw new AppError('Carro não existe', 404);
     }
     await this.repository.delete(id);
+  }
+
+  public async getCarsWithFilters(filters: ICarsFilter): Promise<ICar[]> {
+    return this.repository.findWithFilters(filters);
   }
 }

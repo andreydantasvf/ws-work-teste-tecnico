@@ -1,6 +1,6 @@
 import { FastifyReply, FastifyRequest } from 'fastify';
 import { CarsService } from './cars.service';
-import { ICar } from './cars.types';
+import { ICar, ICarsFilter } from './cars.types';
 
 export class CarsController {
   private carsService: CarsService;
@@ -22,14 +22,24 @@ export class CarsController {
   }
 
   public async getAllCars(
-    _request: FastifyRequest,
+    request: FastifyRequest,
     reply: FastifyReply
   ): Promise<void> {
-    const cars = await this.carsService.getAllCars();
-    reply.send({
-      success: true,
-      data: cars
-    });
+    const filters = request.query as ICarsFilter;
+
+    if (Object.keys(filters).length > 0) {
+      const cars = await this.carsService.getCarsWithFilters(filters);
+      reply.send({
+        success: true,
+        data: cars
+      });
+    } else {
+      const cars = await this.carsService.getAllCars();
+      reply.send({
+        success: true,
+        data: cars
+      });
+    }
   }
 
   public async getCarById(

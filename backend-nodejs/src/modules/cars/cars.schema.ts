@@ -74,6 +74,49 @@ export const carIdSchema = z.object({
     .describe('Identificador único do carro. Exemplo: 1')
 });
 
+export const carsQuerySchema = z.object({
+  color: z.string().optional().describe('Filtrar por cor do carro'),
+  year: z.coerce.number().min(1886).optional().describe('Filtrar por ano'),
+  yearGte: z.coerce
+    .number()
+    .min(1886)
+    .optional()
+    .describe('Ano maior ou igual'),
+  yearLte: z.coerce
+    .number()
+    .min(1886)
+    .optional()
+    .describe('Ano menor ou igual'),
+  fuel: z.string().optional().describe('Filtrar por tipo de combustível'),
+  numberOfPorts: z.coerce
+    .number()
+    .min(1)
+    .optional()
+    .describe('Filtrar por número de portas'),
+  modelId: z.coerce
+    .number()
+    .min(1)
+    .optional()
+    .describe('Filtrar por ID do modelo'),
+  brandName: z.string().optional().describe('Filtrar por nome da marca'),
+  sortBy: z
+    .enum(['year', 'color', 'fuel', 'numberOfPorts'])
+    .optional()
+    .describe('Campo para ordenação'),
+  order: z.enum(['asc', 'desc']).optional().describe('Ordem da ordenação'),
+  page: z.coerce
+    .number()
+    .min(1)
+    .optional()
+    .describe('Número da página para paginação'),
+  limit: z.coerce
+    .number()
+    .min(1)
+    .max(100)
+    .optional()
+    .describe('Limite de resultados por página')
+});
+
 /*
   OpenAPI helper schemas (Zod) - responses and components
 */
@@ -84,7 +127,13 @@ export const carSchema = z.object({
   year: z.number().min(1886).describe('Ano de fabricação do carro'),
   numberOfPorts: z.number().min(1).describe('Número de portas do carro'),
   fuel: z.string().min(2).max(30).describe('Tipo de combustível do carro'),
-  modelId: z.number().min(1).describe('Identificador único do modelo')
+  modelId: z.number().min(1).describe('Identificador único do modelo'),
+  model: z.object({
+    name: z.string().min(2).max(100).describe('Nome do modelo do carro'),
+    brand: z.object({
+      name: z.string().min(2).max(100).describe('Nome da marca do carro')
+    })
+  })
 });
 
 export const createCarResponseSchema = z.object({

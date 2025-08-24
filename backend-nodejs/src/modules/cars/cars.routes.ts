@@ -7,7 +7,8 @@ import {
   createCarResponseSchema,
   createCarSchema,
   deleteCarResponseSchema,
-  errorResponseSchema
+  errorResponseSchema,
+  carsQuerySchema
 } from './cars.schema';
 
 export class CarsRoutes {
@@ -64,7 +65,9 @@ export class CarsRoutes {
         schema: {
           tags: ['Carros'],
           summary: 'Listar todos os carros',
-          description: 'Obtém uma lista de todos os carros',
+          description:
+            'Obtém uma lista de todos os carros com filtros opcionais',
+          querystring: carsQuerySchema,
           response: {
             200: carsListResponseSchema
           }
