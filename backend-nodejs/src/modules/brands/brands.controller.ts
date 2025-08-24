@@ -1,6 +1,6 @@
 import { type FastifyReply, type FastifyRequest } from 'fastify';
 import { BrandsService } from './brands.service';
-import { IBrand } from './brands.types';
+import { type BrandQueryParams, type IBrand } from './brands.types';
 
 export class BrandsController {
   private brandsService: BrandsService;
@@ -22,13 +22,15 @@ export class BrandsController {
   }
 
   public async getAllBrands(
-    _request: FastifyRequest,
+    request: FastifyRequest,
     reply: FastifyReply
   ): Promise<void> {
-    const brands = await this.brandsService.getAllBrands();
+    const queryParams = request.query as BrandQueryParams;
+    const result = await this.brandsService.getAllBrands(queryParams);
     reply.status(200).send({
       success: true,
-      data: brands
+      data: result.brands,
+      pagination: result.pagination
     });
   }
 

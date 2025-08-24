@@ -1,6 +1,11 @@
 import { AppError } from '@/core/webserver/app-error';
 import { BrandsRepository } from './brands.repository';
-import { type IBrand, type IBrandRepository } from './brands.types';
+import {
+  BrandQueryParams,
+  PaginatedBrandsResult,
+  type IBrand,
+  type IBrandRepository
+} from './brands.types';
 
 export class BrandsService {
   private repository: IBrandRepository;
@@ -17,8 +22,39 @@ export class BrandsService {
     return await this.repository.save({ name });
   }
 
-  public async getAllBrands(): Promise<IBrand[]> {
-    return await this.repository.findAll();
+  public async getAllBrands(
+    queryParams?: BrandQueryParams
+  ): Promise<PaginatedBrandsResult> {
+    const page = queryParams?.page || 1;
+    const limit = queryParams?.limit || 10;
+    const search = queryParams?.search;
+    const sortBy = queryParams?.sortBy || 'name';
+    const sortOrder = queryParams?.sortOrder || 'asc';
+
+    const offset = (page - 1) * limit;
+
+    const totalBrands = await this.repository.countBrands(search);
+    const totalPages = Math.ceil(totalBrands / limit);
+
+    const brands = await this.repository.findWithPagination({
+      offset,
+      limit,
+      search,
+      sortBy,
+      sortOrder
+    });
+
+    return {
+      brands,
+      pagination: {
+        page,
+        limit,
+        total: totalBrands,
+        totalPages,
+        hasNext: page < totalPages,
+        hasPrev: page > 1
+      }
+    };
   }
 
   public async getBrandById(id: number): Promise<IBrand> {
