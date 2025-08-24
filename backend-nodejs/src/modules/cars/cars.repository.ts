@@ -12,7 +12,7 @@ export class CarsRepository implements ICarRepository {
 
   async save(car: ICar): Promise<ICar> {
     try {
-      const createdCar = await this.db.car.create({
+      const createdCar = await this.db.cars.create({
         data: car
       });
       return createdCar;
@@ -23,7 +23,7 @@ export class CarsRepository implements ICarRepository {
 
   async findAll(): Promise<ICar[]> {
     try {
-      const cars = await this.db.car.findMany();
+      const cars = await this.db.cars.findMany();
       return cars;
     } catch (error) {
       throw new AppError(`Error fetching all cars: ${error}`, 500);
@@ -32,7 +32,7 @@ export class CarsRepository implements ICarRepository {
 
   async findById(id: number): Promise<ICar | null> {
     try {
-      const car = await this.db.car.findUnique({
+      const car = await this.db.cars.findUnique({
         where: { id }
       });
       return car;
@@ -43,7 +43,7 @@ export class CarsRepository implements ICarRepository {
 
   async update(id: number, car: ICar): Promise<ICar | null> {
     try {
-      const updatedCar = await this.db.car.update({
+      const updatedCar = await this.db.cars.update({
         where: { id },
         data: car
       });
@@ -55,7 +55,7 @@ export class CarsRepository implements ICarRepository {
 
   async delete(id: number): Promise<boolean> {
     try {
-      await this.db.car.delete({
+      await this.db.cars.delete({
         where: { id }
       });
       return true;
