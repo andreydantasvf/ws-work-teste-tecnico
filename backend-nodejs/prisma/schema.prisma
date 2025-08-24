@@ -25,7 +25,7 @@ model Model {
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
-  brand   Brand  @relation(fields: [brandId], references: [id])
+  brand   Brand  @relation(fields: [brandId], references: [id], onDelete: Cascade)
   brandId Int    @map("brand_id")
   Cars    Cars[]
 
@@ -41,7 +41,7 @@ model Cars {
   createdAt     DateTime @default(now()) @map("created_at")
   updatedAt     DateTime @updatedAt @map("updated_at")
 
-  model   Model @relation(fields: [modelId], references: [id])
+  model   Model @relation(fields: [modelId], references: [id], onDelete: Cascade)
   modelId Int   @map("model_id")
 
   @@map("cars")
