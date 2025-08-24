@@ -1,4 +1,4 @@
-import { describe, it, expect, afterAll, beforeEach } from 'vitest';
+import { describe, it, expect, afterAll, beforeEach, beforeAll } from 'vitest';
 import request from 'supertest';
 import { FastifyInstance } from 'fastify';
 import { createTestApp, closeTestApp } from '../helpers/app.helper';
@@ -8,8 +8,11 @@ describe('Models Endpoints Integration Tests', () => {
   let app: FastifyInstance;
   let testBrand: { id: number; name: string };
 
-  beforeEach(async () => {
+  beforeAll(async () => {
     app = await createTestApp();
+  });
+
+  beforeEach(async () => {
     testBrand = await prisma.brand.create({
       data: { name: 'Test Brand' }
     });
