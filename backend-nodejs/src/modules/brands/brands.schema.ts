@@ -1,10 +1,55 @@
+import { AppError } from '@/core/webserver/app-error';
 import z from 'zod';
+
+// Função para validar e sanitizar nome da marca
+const validateBrandName = (name: string) => {
+  const trimmedName = name.trim();
+
+  // Verificar se não é apenas espaços
+  if (!trimmedName || trimmedName.length === 0) {
+    throw new AppError(
+      'Nome da marca não pode ser apenas espaços em branco',
+      400
+    );
+  }
+
+  // Verificar se contém tags HTML ou scripts (prevenção XSS básico)
+  if (/<[^>]*>/g.test(trimmedName)) {
+    throw new AppError('Nome da marca não pode conter tags HTML', 400);
+  }
+
+  // Verificar caracteres suspeitos de SQL injection
+  const sqlInjectionPatterns = [
+    /('|(\\')|(;)|(\\;)|(\\x27)|(\\x2D\\x2D)|(--)|(\|)|(\*)|(%)|(@))/i,
+    /(DROP|DELETE|INSERT|UPDATE|SELECT|UNION|ALTER|CREATE|EXEC|EXECUTE)/i,
+    /(script|javascript|vbscript|onload|onerror|onclick)/i
+  ];
+
+  for (const pattern of sqlInjectionPatterns) {
+    if (pattern.test(trimmedName)) {
+      throw new AppError('Nome da marca contém caracteres não permitidos', 400);
+    }
+  }
+
+  // Permitir apenas letras, números, espaços e alguns caracteres especiais seguros
+  const allowedPattern = /^[a-zA-ZÀ-ÿ0-9\s\-&.()]+$/;
+  if (!allowedPattern.test(trimmedName)) {
+    throw new AppError('Nome da marca contém caracteres não permitidos', 400);
+  }
+
+  return trimmedName;
+};
 
 export const createBrandSchema = z.object({
   name: z
     .string({ message: 'Nome da marca é obrigatório' })
-    .min(2, 'Nome da marca deve ter pelo menos 2 caracteres')
+    .min(1, 'Nome da marca é obrigatório')
     .max(100, 'Nome da marca deve ter no máximo 100 caracteres')
+    .transform(validateBrandName)
+    .refine(
+      (name) => name.length >= 2,
+      'Nome da marca deve ter pelo menos 2 caracteres'
+    )
     .describe('Nome da marca de veículo. Exemplo: Toyota')
 });
 
@@ -42,12 +87,9 @@ export const deleteBrandResponseSchema = z.object({
 });
 
 export const errorResponseSchema = z.object({
-  success: z.literal(false).describe('Indica que a operação falhou'),
   message: z.string().describe('Mensagem de erro descritiva'),
-  errors: z
-    .array(z.any())
-    .optional()
-    .describe('Lista detalhada de erros de validação')
+  statusCode: z.number().min(400).max(599).describe('Código de status HTTP'),
+  error: z.any().describe('Detalhes do erro')
 });
 
 export type Brand = z.infer<typeof brandSchema>;
