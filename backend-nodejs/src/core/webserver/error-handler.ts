@@ -12,7 +12,7 @@ export const errorHandler = (app: FastifyInstance) => {
     (error: FastifyError, _request: FastifyRequest, reply: FastifyReply) => {
       if (error instanceof AppError) {
         return reply.status(error.statusCode).send({
-          success: false,
+          error,
           message: error.message,
           statusCode: error.statusCode
         });
@@ -20,7 +20,7 @@ export const errorHandler = (app: FastifyInstance) => {
 
       if (hasZodFastifySchemaValidationErrors(error)) {
         return reply.status(400).send({
-          success: false,
+          error,
           message: error.validation.map((e) => e.message).join(', '),
           statusCode: 400
         });
@@ -29,7 +29,7 @@ export const errorHandler = (app: FastifyInstance) => {
       // eslint-disable-next-line no-console
       console.error('Unexpected error:', error);
       return reply.status(500).send({
-        success: false,
+        error,
         message: `Internal Server Error. ${error.message}`,
         statusCode: 500
       });
