@@ -1,6 +1,10 @@
 import { AppError } from '@/core/webserver/app-error';
 import { BrandsRepository } from './brands.repository';
-import { type IBrand, type IBrandRepository } from './brands.types';
+import {
+  type IBrand,
+  type IBrandRepository,
+  type IModelByBrand
+} from './brands.types';
 
 export class BrandsService {
   private repository: IBrandRepository;
@@ -46,5 +50,13 @@ export class BrandsService {
       throw new AppError('Marca não encontrada', 404);
     }
     return await this.repository.delete(id);
+  }
+
+  public async getModelsByBrandId(brandId: number): Promise<IModelByBrand[]> {
+    const brand = await this.repository.findById(brandId);
+    if (!brand) {
+      throw new AppError('Marca não encontrada', 404);
+    }
+    return await this.repository.findModelsByBrandId(brandId);
   }
 }

@@ -65,4 +65,16 @@ export class BrandsController {
     await this.brandsService.deleteBrand(id);
     reply.status(200).send({ success: true, data: null });
   }
+
+  public async getModelsByBrandId(
+    request: FastifyRequest,
+    reply: FastifyReply
+  ): Promise<void> {
+    const { id } = request.params as { id: number };
+    const models = await this.brandsService.getModelsByBrandId(id);
+    reply.status(200).send({
+      success: true,
+      data: models
+    });
+  }
 }

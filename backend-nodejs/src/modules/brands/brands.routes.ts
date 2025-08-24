@@ -7,7 +7,8 @@ import {
   createBrandResponseSchema,
   brandsListResponseSchema,
   deleteBrandResponseSchema,
-  errorResponseSchema
+  errorResponseSchema,
+  brandModelsResponseSchema
 } from './brands.schema';
 
 export class BrandsRoutes {
@@ -110,6 +111,24 @@ export class BrandsRoutes {
         }
       },
       (request, reply) => this.controller.updateBrand(request, reply)
+    );
+
+    fastifyWithZod.get(
+      '/:id/models',
+      {
+        schema: {
+          tags: ['Marcas'],
+          summary: 'Listar modelos de uma marca',
+          description:
+            'Retorna todos os modelos associados a uma marca específica.',
+          params: brandIdSchema,
+          response: {
+            200: brandModelsResponseSchema,
+            404: errorResponseSchema
+          }
+        }
+      },
+      (request, reply) => this.controller.getModelsByBrandId(request, reply)
     );
   };
 }

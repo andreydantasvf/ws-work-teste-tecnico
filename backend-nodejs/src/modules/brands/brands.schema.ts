@@ -92,4 +92,18 @@ export const errorResponseSchema = z.object({
   error: z.any().describe('Detalhes do erro')
 });
 
+// Schema para modelos relacionados à marca
+export const modelByBrandSchema = z.object({
+  id: z.number().int().describe('Identificador único do modelo'),
+  name: z.string().min(2).max(100).describe('Nome do modelo'),
+  fipeValue: z.number().min(0).describe('Valor da tabela FIPE do modelo'),
+  createdAt: z.date().optional().describe('Data de criação do modelo'),
+  updatedAt: z.date().optional().describe('Data da última atualização')
+});
+
+export const brandModelsResponseSchema = z.object({
+  success: z.literal(true).describe('Indica se a operação foi bem-sucedida'),
+  data: z.array(modelByBrandSchema).describe('Lista de modelos da marca')
+});
+
 export type Brand = z.infer<typeof brandSchema>;

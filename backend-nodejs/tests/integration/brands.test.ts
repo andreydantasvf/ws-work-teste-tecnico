@@ -433,4 +433,134 @@ describe('Brands Endpoints Integration Tests', () => {
         .expect(400);
     });
   });
+
+  describe('GET /api/brands/:id/models', () => {
+    it('deve retornar array vazio quando marca não tem modelos', async () => {
+      const brand = await prisma.brand.create({
+        data: { name: 'Brand Without Models' }
+      });
+
+      const response = await request(app.server)
+        .get(`/api/brands/${brand.id}/models`)
+        .expect(200);
+
+      expect(response.body).toEqual({
+        success: true,
+        data: []
+      });
+    });
+
+    it('deve retornar todos os modelos de uma marca', async () => {
+      const brand = await prisma.brand.create({
+        data: { name: 'Toyota' }
+      });
+
+      await prisma.model.createMany({
+        data: [
+          { name: 'Corolla', brandId: brand.id, fipeValue: 80000 },
+          { name: 'Camry', brandId: brand.id, fipeValue: 100000 },
+          { name: 'Prius', brandId: brand.id, fipeValue: 120000 }
+        ]
+      });
+
+      const response = await request(app.server)
+        .get(`/api/brands/${brand.id}/models`)
+        .expect(200);
+
+      expect(response.body.data).toHaveLength(3);
+      const modelNames = response.body.data.map(
+        (m: { name: string }) => m.name
+      );
+      expect(modelNames).toContain('Corolla');
+      expect(modelNames).toContain('Camry');
+      expect(modelNames).toContain('Prius');
+    });
+
+    it('deve retornar modelos com estrutura correta', async () => {
+      const brand = await prisma.brand.create({
+        data: { name: 'Honda' }
+      });
+
+      await prisma.model.create({
+        data: { name: 'Civic', brandId: brand.id, fipeValue: 85000 }
+      });
+
+      const response = await request(app.server)
+        .get(`/api/brands/${brand.id}/models`)
+        .expect(200);
+
+      expect(response.body).toHaveProperty('success', true);
+      expect(response.body).toHaveProperty('data');
+      expect(response.body.data[0]).toHaveProperty('id');
+      expect(response.body.data[0]).toHaveProperty('name');
+      expect(response.body.data[0]).toHaveProperty('fipeValue');
+      expect(response.body.data[0]).toHaveProperty('createdAt');
+      expect(response.body.data[0]).toHaveProperty('updatedAt');
+      expect(response.body.data[0]).not.toHaveProperty('brandId');
+    });
+
+    it('deve retornar 404 para marca inexistente', async () => {
+      const response = await request(app.server)
+        .get('/api/brands/999999/models')
+        .expect(404);
+
+      expect(response.body).toHaveProperty('message');
+      expect(response.body.message).toBe('Marca não encontrada');
+    });
+
+    it('deve retornar 400 para ID inválido', async () => {
+      await request(app.server).get('/api/brands/abc/models').expect(400);
+    });
+
+    it('deve filtrar apenas modelos da marca específica', async () => {
+      const brand1 = await prisma.brand.create({
+        data: { name: 'Toyota' }
+      });
+
+      const brand2 = await prisma.brand.create({
+        data: { name: 'Honda' }
+      });
+
+      await prisma.model.createMany({
+        data: [
+          { name: 'Corolla', brandId: brand1.id, fipeValue: 80000 },
+          { name: 'Civic', brandId: brand2.id, fipeValue: 85000 },
+          { name: 'Camry', brandId: brand1.id, fipeValue: 100000 }
+        ]
+      });
+
+      const response = await request(app.server)
+        .get(`/api/brands/${brand1.id}/models`)
+        .expect(200);
+
+      expect(response.body.data).toHaveLength(2);
+      const modelNames = response.body.data.map(
+        (m: { name: string }) => m.name
+      );
+      expect(modelNames).toContain('Corolla');
+      expect(modelNames).toContain('Camry');
+      expect(modelNames).not.toContain('Civic');
+    });
+
+    it('deve lidar com marca com muitos modelos', async () => {
+      const brand = await prisma.brand.create({
+        data: { name: 'Multi Model Brand' }
+      });
+
+      const modelData = Array.from({ length: 20 }, (_, i) => ({
+        name: `Model ${i + 1}`,
+        brandId: brand.id,
+        fipeValue: 50000 + i * 1000
+      }));
+
+      await prisma.model.createMany({ data: modelData });
+
+      const response = await request(app.server)
+        .get(`/api/brands/${brand.id}/models`)
+        .expect(200);
+
+      expect(response.body.data).toHaveLength(20);
+      expect(response.body).toHaveProperty('success', true);
+    });
+  });
 });

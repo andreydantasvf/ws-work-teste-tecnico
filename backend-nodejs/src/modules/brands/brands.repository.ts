@@ -1,5 +1,9 @@
 import { type PrismaClient } from '@prisma/client';
-import { type IBrand, type IBrandRepository } from './brands.types';
+import {
+  type IBrand,
+  type IBrandRepository,
+  type IModelByBrand
+} from './brands.types';
 import { DatabaseConnection } from '@/core/database/connection';
 
 export class BrandsRepository implements IBrandRepository {
@@ -73,6 +77,24 @@ export class BrandsRepository implements IBrandRepository {
       return true;
     } catch (error) {
       throw new Error('Error deleting brand: ' + error);
+    }
+  }
+
+  async findModelsByBrandId(brandId: number): Promise<IModelByBrand[]> {
+    try {
+      const models = await this.db.model.findMany({
+        where: { brandId },
+        select: {
+          id: true,
+          name: true,
+          fipeValue: true,
+          createdAt: true,
+          updatedAt: true
+        }
+      });
+      return models;
+    } catch (error) {
+      throw new Error('Error fetching models by brand ID: ' + error);
     }
   }
 }
