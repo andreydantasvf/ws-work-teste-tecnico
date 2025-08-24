@@ -60,37 +60,6 @@ export const brandIdSchema = z.object({
     .describe('Identificador único da marca. Exemplo: 1')
 });
 
-export const brandsQuerySchema = z.object({
-  page: z.coerce
-    .number({ message: 'Página deve ser um número' })
-    .min(1, 'Página deve ser maior que 0')
-    .default(1)
-    .describe('Número da página para paginação. Exemplo: 1'),
-  limit: z.coerce
-    .number({ message: 'Limite deve ser um número' })
-    .min(1, 'Limite deve ser maior que 0')
-    .max(100, 'Limite não pode ser maior que 100')
-    .default(10)
-    .describe('Número de itens por página. Máximo: 100. Exemplo: 10'),
-  search: z
-    .string()
-    .optional()
-    .transform((val) => val?.trim())
-    .refine(
-      (search) => !search || search.length >= 2,
-      'Busca deve ter pelo menos 2 caracteres'
-    )
-    .describe('Termo de busca para filtrar marcas pelo nome. Exemplo: Toyota'),
-  sortBy: z
-    .enum(['name', 'createdAt', 'id'])
-    .default('name')
-    .describe('Campo para ordenação. Opções: name, createdAt, id'),
-  sortOrder: z
-    .enum(['asc', 'desc'])
-    .default('asc')
-    .describe('Ordem da classificação. Opções: asc, desc')
-});
-
 /*
   OpenAPI helper schemas (Zod) - responses and components
 */
@@ -110,21 +79,6 @@ export const createBrandResponseSchema = z.object({
 export const brandsListResponseSchema = z.object({
   success: z.literal(true).describe('Indica se a operação foi bem-sucedida'),
   data: z.array(brandSchema).describe('Lista de todas as marcas cadastradas')
-});
-
-export const paginatedBrandsResponseSchema = z.object({
-  success: z.literal(true).describe('Indica se a operação foi bem-sucedida'),
-  data: z.array(brandSchema).describe('Lista de marcas da página atual'),
-  pagination: z
-    .object({
-      page: z.number().describe('Página atual'),
-      limit: z.number().describe('Itens por página'),
-      total: z.number().describe('Total de itens'),
-      totalPages: z.number().describe('Total de páginas'),
-      hasNext: z.boolean().describe('Tem próxima página'),
-      hasPrev: z.boolean().describe('Tem página anterior')
-    })
-    .describe('Informações de paginação')
 });
 
 export const deleteBrandResponseSchema = z.object({

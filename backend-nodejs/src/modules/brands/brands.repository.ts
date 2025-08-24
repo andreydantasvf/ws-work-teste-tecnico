@@ -1,9 +1,5 @@
 import { type PrismaClient } from '@prisma/client';
-import {
-  type IBrand,
-  type IBrandRepository,
-  type PaginationParams
-} from './brands.types';
+import { type IBrand, type IBrandRepository } from './brands.types';
 import { DatabaseConnection } from '@/core/database/connection';
 
 export class BrandsRepository implements IBrandRepository {
@@ -32,57 +28,6 @@ export class BrandsRepository implements IBrandRepository {
       return brands;
     } catch (error) {
       throw new Error('Error fetching all brands: ' + error);
-    }
-  }
-
-  async findWithPagination(params: PaginationParams): Promise<IBrand[]> {
-    try {
-      const { offset, limit, search, sortBy, sortOrder } = params;
-
-      const whereClause = search
-        ? {
-            name: {
-              contains: search,
-              mode: 'insensitive' as const
-            }
-          }
-        : {};
-
-      const orderByClause = {
-        [sortBy]: sortOrder
-      };
-
-      const brands = await this.db.brand.findMany({
-        where: whereClause,
-        orderBy: orderByClause,
-        skip: offset,
-        take: limit
-      });
-
-      return brands;
-    } catch (error) {
-      throw new Error('Error fetching brands with pagination: ' + error);
-    }
-  }
-
-  async countBrands(search?: string): Promise<number> {
-    try {
-      const whereClause = search
-        ? {
-            name: {
-              contains: search,
-              mode: 'insensitive' as const
-            }
-          }
-        : {};
-
-      const count = await this.db.brand.count({
-        where: whereClause
-      });
-
-      return count;
-    } catch (error) {
-      throw new Error('Error counting brands: ' + error);
     }
   }
 

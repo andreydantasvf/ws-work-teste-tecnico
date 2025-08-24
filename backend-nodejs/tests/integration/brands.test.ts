@@ -16,41 +16,23 @@ describe('Brands Endpoints Integration Tests', () => {
   });
 
   describe('GET /api/brands', () => {
-    it('deve retornar lista vazia quando não há marcas', async () => {
+    it('deve retornar array vazio quando não há marcas', async () => {
       const response = await request(app.server).get('/api/brands').expect(200);
 
       expect(response.body).toEqual({
         success: true,
-        data: [],
-        pagination: {
-          page: 1,
-          limit: 10,
-          total: 0,
-          totalPages: 0,
-          hasNext: false,
-          hasPrev: false
-        }
+        data: []
       });
     });
 
-    it('deve retornar todas as marcas com paginação padrão', async () => {
+    it('deve retornar todas as marcas cadastradas', async () => {
       await prisma.brand.createMany({
         data: [{ name: 'Toyota' }, { name: 'Honda' }, { name: 'Ford' }]
       });
 
       const response = await request(app.server).get('/api/brands').expect(200);
 
-      expect(response.body.success).toBe(true);
       expect(response.body.data).toHaveLength(3);
-      expect(response.body.pagination).toEqual({
-        page: 1,
-        limit: 10,
-        total: 3,
-        totalPages: 1,
-        hasNext: false,
-        hasPrev: false
-      });
-
       const brandNames = response.body.data.map(
         (b: { name: string }) => b.name
       );
@@ -59,7 +41,7 @@ describe('Brands Endpoints Integration Tests', () => {
       expect(brandNames).toContain('Ford');
     });
 
-    it('deve retornar marcas com estrutura correta incluindo paginação', async () => {
+    it('deve retornar marcas com estrutura correta', async () => {
       await prisma.brand.create({
         data: { name: 'BMW' }
       });
@@ -68,140 +50,10 @@ describe('Brands Endpoints Integration Tests', () => {
 
       expect(response.body).toHaveProperty('success', true);
       expect(response.body).toHaveProperty('data');
-      expect(response.body).toHaveProperty('pagination');
       expect(response.body.data[0]).toHaveProperty('id');
       expect(response.body.data[0]).toHaveProperty('name');
       expect(response.body.data[0]).toHaveProperty('createdAt');
       expect(response.body.data[0]).toHaveProperty('updatedAt');
-    });
-
-    it('deve funcionar com paginação personalizada', async () => {
-      const brandNames = Array.from({ length: 15 }, (_, i) => `Marca ${i + 1}`);
-      await prisma.brand.createMany({
-        data: brandNames.map((name) => ({ name }))
-      });
-
-      const response = await request(app.server)
-        .get('/api/brands?page=2&limit=5')
-        .expect(200);
-
-      expect(response.body.success).toBe(true);
-      expect(response.body.data).toHaveLength(5);
-      expect(response.body.pagination).toEqual({
-        page: 2,
-        limit: 5,
-        total: 15,
-        totalPages: 3,
-        hasNext: true,
-        hasPrev: true
-      });
-    });
-
-    it('deve funcionar com busca por nome', async () => {
-      await prisma.brand.createMany({
-        data: [
-          { name: 'Toyota Corolla' },
-          { name: 'Honda Civic' },
-          { name: 'Ford Focus' },
-          { name: 'Toyota Camry' }
-        ]
-      });
-
-      const response = await request(app.server)
-        .get('/api/brands?search=Toyota')
-        .expect(200);
-
-      expect(response.body.success).toBe(true);
-      expect(response.body.data).toHaveLength(2);
-      expect(
-        response.body.data.every((brand: { name: string }) =>
-          brand.name.includes('Toyota')
-        )
-      ).toBe(true);
-      expect(response.body.pagination.total).toBe(2);
-    });
-
-    it('deve funcionar com ordenação por nome crescente', async () => {
-      await prisma.brand.createMany({
-        data: [{ name: 'Zebra' }, { name: 'Apple' }, { name: 'Microsoft' }]
-      });
-
-      const response = await request(app.server)
-        .get('/api/brands?sortBy=name&sortOrder=asc')
-        .expect(200);
-
-      expect(response.body.success).toBe(true);
-      expect(response.body.data[0].name).toBe('Apple');
-      expect(response.body.data[1].name).toBe('Microsoft');
-      expect(response.body.data[2].name).toBe('Zebra');
-    });
-
-    it('deve funcionar com ordenação por nome decrescente', async () => {
-      await prisma.brand.createMany({
-        data: [{ name: 'Apple' }, { name: 'Microsoft' }, { name: 'Zebra' }]
-      });
-
-      const response = await request(app.server)
-        .get('/api/brands?sortBy=name&sortOrder=desc')
-        .expect(200);
-
-      expect(response.body.success).toBe(true);
-      expect(response.body.data[0].name).toBe('Zebra');
-      expect(response.body.data[1].name).toBe('Microsoft');
-      expect(response.body.data[2].name).toBe('Apple');
-    });
-
-    it('deve rejeitar página inválida', async () => {
-      await request(app.server).get('/api/brands?page=0').expect(400);
-    });
-
-    it('deve rejeitar limite muito alto', async () => {
-      await request(app.server).get('/api/brands?limit=200').expect(400);
-    });
-
-    it('deve rejeitar busca muito curta', async () => {
-      await request(app.server).get('/api/brands?search=a').expect(400);
-    });
-
-    it('deve rejeitar sortBy inválido', async () => {
-      await request(app.server).get('/api/brands?sortBy=invalid').expect(400);
-    });
-
-    it('deve rejeitar sortOrder inválido', async () => {
-      await request(app.server)
-        .get('/api/brands?sortOrder=invalid')
-        .expect(400);
-    });
-
-    it('deve combinar busca, paginação e ordenação', async () => {
-      await prisma.brand.createMany({
-        data: [
-          { name: 'Toyota Corolla' },
-          { name: 'Toyota Camry' },
-          { name: 'Toyota Prius' },
-          { name: 'Honda Civic' },
-          { name: 'Honda Accord' }
-        ]
-      });
-
-      const response = await request(app.server)
-        .get(
-          '/api/brands?search=Toyota&page=1&limit=2&sortBy=name&sortOrder=desc'
-        )
-        .expect(200);
-
-      expect(response.body.success).toBe(true);
-      expect(response.body.data).toHaveLength(2);
-      expect(response.body.data[0].name).toBe('Toyota Prius');
-      expect(response.body.data[1].name).toBe('Toyota Corolla');
-      expect(response.body.pagination).toEqual({
-        page: 1,
-        limit: 2,
-        total: 3,
-        totalPages: 2,
-        hasNext: true,
-        hasPrev: false
-      });
     });
   });
 
@@ -543,9 +395,7 @@ describe('Brands Endpoints Integration Tests', () => {
       await prisma.brand.createMany({ data: brandData });
 
       const start = Date.now();
-      const response = await request(app.server)
-        .get('/api/brands?page=1&limit=50')
-        .expect(200);
+      const response = await request(app.server).get('/api/brands').expect(200);
       const duration = Date.now() - start;
 
       expect(response.body).toHaveProperty('success', true);

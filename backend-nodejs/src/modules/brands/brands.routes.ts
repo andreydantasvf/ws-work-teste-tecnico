@@ -5,8 +5,7 @@ import {
   brandIdSchema,
   createBrandSchema,
   createBrandResponseSchema,
-  paginatedBrandsResponseSchema,
-  brandsQuerySchema,
+  brandsListResponseSchema,
   deleteBrandResponseSchema,
   errorResponseSchema
 } from './brands.schema';
@@ -48,12 +47,11 @@ export class BrandsRoutes {
       {
         schema: {
           tags: ['Marcas'],
-          summary: 'Listar marcas com paginação',
+          summary: 'Listar todas as marcas',
           description:
-            'Retorna uma lista paginada de marcas com opções de busca e ordenação. Suporta busca por nome, paginação e ordenação por diferentes campos.',
-          querystring: brandsQuerySchema,
+            'Retorna um array com todas as marcas cadastradas no sistema.',
           response: {
-            200: paginatedBrandsResponseSchema
+            200: brandsListResponseSchema
           }
         }
       },
