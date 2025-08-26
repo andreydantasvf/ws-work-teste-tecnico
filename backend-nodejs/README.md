@@ -118,7 +118,7 @@ Siga os passos abaixo para configurar e executar o ambiente de desenvolvimento l
    O arquivo `.env` já vem pré-configurado para o ambiente Docker local, mas você pode ajustá-lo se necessário.
 
 4. **Inicie os Containers**:
-   Suba o container do PostgreSQL e da API com o Docker Compose.
+   Na raiz do repositório, execute o comando:
 
    ```bash
    docker-compose up -d
