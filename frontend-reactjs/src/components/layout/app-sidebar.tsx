@@ -78,7 +78,7 @@ export function AppSidebar({ currentPage, onPageChange }: AppSidebarProps) {
     const baseClasses = 'h-5 w-5 flex-shrink-0 transition-all duration-200';
 
     if (currentPage === pageId) {
-      return `${baseClasses} text-white dark:text-gray-900`;
+      return `${baseClasses} text-white`;
     }
 
     return `${baseClasses} ${baseColor} group-hover:scale-110`;
