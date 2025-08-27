@@ -1,4 +1,6 @@
 import React from 'react';
+import { Plus, Edit } from 'lucide-react';
+import { motion } from 'framer-motion';
 import {
   Dialog,
   DialogContent,
@@ -72,7 +74,8 @@ export const BrandModal: React.FC<BrandModalProps> = ({
   isLoading = false
 }) => {
   const isEditMode = !!brand;
-  const title = isEditMode ? `Edit ${brand.name}` : 'Create New Brand';
+  const title = isEditMode ? `Editar ${brand.name}` : 'Nova Marca';
+  const Icon = isEditMode ? Edit : Plus;
 
   const handleSubmit = (data: CreateBrandPayload | UpdateBrandPayload) => {
     onSubmit(data);
@@ -80,9 +83,21 @@ export const BrandModal: React.FC<BrandModalProps> = ({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-md">
+      <DialogContent className="sm:max-w-md border-2 border-yellow-200 bg-gradient-to-br from-white to-yellow-50">
         <DialogHeader>
-          <DialogTitle>{title}</DialogTitle>
+          <div className="flex items-center gap-3 mb-2">
+            <motion.div
+              initial={{ scale: 0, rotate: 0 }}
+              animate={{ scale: 1, rotate: 360 }}
+              transition={{ duration: 0.3, type: 'spring' }}
+              className="w-10 h-10 bg-gradient-to-br from-yellow-400 to-yellow-500 rounded-full flex items-center justify-center shadow-md"
+            >
+              <Icon className="h-5 w-5 text-white" />
+            </motion.div>
+            <DialogTitle className="text-xl font-bold bg-gradient-to-r from-yellow-700 to-yellow-800 bg-clip-text text-transparent">
+              {title}
+            </DialogTitle>
+          </div>
         </DialogHeader>
 
         <div className="mt-4">

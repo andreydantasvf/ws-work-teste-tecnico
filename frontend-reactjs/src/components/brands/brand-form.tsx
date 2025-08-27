@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import type {
   Brand,
   CreateBrandPayload,
@@ -55,8 +54,7 @@ export const BrandForm: React.FC<BrandFormProps> = ({
   initialValues,
   onSubmit,
   onCancel,
-  isLoading = false,
-  title = initialValues ? 'Edit Brand' : 'Create Brand'
+  isLoading = false
 }) => {
   const [formData, setFormData] = useState({
     name: initialValues?.name || ''
@@ -98,45 +96,51 @@ export const BrandForm: React.FC<BrandFormProps> = ({
   };
 
   return (
-    <Card className="w-full max-w-md mx-auto">
-      <CardHeader>
-        <CardTitle>{title}</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="name">Brand Name</Label>
-            <Input
-              id="name"
-              type="text"
-              value={formData.name}
-              onChange={(e) => handleInputChange('name', e.target.value)}
-              placeholder="Enter brand name"
-              variant={errors.name ? 'destructive' : 'default'}
-              disabled={isLoading}
-            />
-            {errors.name && (
-              <p className="text-sm text-destructive">{errors.name}</p>
-            )}
-          </div>
+    <div className="w-full">
+      <form onSubmit={handleSubmit} className="space-y-6">
+        <div className="space-y-2">
+          <Label htmlFor="name" className="text-yellow-800 font-semibold">
+            Nome da Marca
+          </Label>
+          <Input
+            id="name"
+            type="text"
+            value={formData.name}
+            onChange={(e) => handleInputChange('name', e.target.value)}
+            placeholder="Digite o nome da marca"
+            className={`border-2 transition-all duration-200 ${
+              errors.name
+                ? 'border-red-300 focus:border-red-500'
+                : 'border-yellow-200 focus:border-yellow-400'
+            } bg-white/50`}
+            disabled={isLoading}
+          />
+          {errors.name && (
+            <p className="text-sm text-red-600 font-medium">{errors.name}</p>
+          )}
+        </div>
 
-          <div className="flex gap-2 pt-4">
-            <Button type="submit" className="flex-1" disabled={isLoading}>
-              {isLoading ? 'Saving...' : initialValues ? 'Update' : 'Create'}
+        <div className="flex items-center justify-center gap-3 pt-4">
+          <Button
+            type="submit"
+            className="bg-gradient-to-r w-36 cursor-pointer from-yellow-500 to-yellow-600 hover:from-yellow-600 hover:to-yellow-700 text-white shadow-lg hover:shadow-xl transition-all duration-200"
+            disabled={isLoading}
+          >
+            {isLoading ? 'Salvando...' : initialValues ? 'Atualizar' : 'Criar'}
+          </Button>
+          {onCancel && (
+            <Button
+              type="button"
+              variant="outline"
+              onClick={onCancel}
+              disabled={isLoading}
+              className="border-gray-300 w-36 cursor-pointer text-gray-600 hover:bg-gray-200"
+            >
+              Cancelar
             </Button>
-            {onCancel && (
-              <Button
-                type="button"
-                variant="outline"
-                onClick={onCancel}
-                disabled={isLoading}
-              >
-                Cancel
-              </Button>
-            )}
-          </div>
-        </form>
-      </CardContent>
-    </Card>
+          )}
+        </div>
+      </form>
+    </div>
   );
 };

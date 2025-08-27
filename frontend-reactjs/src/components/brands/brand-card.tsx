@@ -1,13 +1,8 @@
 import React from 'react';
-import { Edit, Trash2, Calendar } from 'lucide-react';
+import { Edit, Trash2, Calendar, Building2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import {
-  Card,
-  CardContent,
-  CardFooter,
-  CardHeader,
-  CardTitle
-} from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { motion } from 'framer-motion';
 import type { Brand } from '@/types/brand';
 
 interface BrandCardProps {
@@ -22,7 +17,7 @@ interface BrandCardProps {
   /**
    * Callback fired when delete button is clicked
    */
-  onDelete?: (brandId: number) => void;
+  onDelete?: (brand: Brand) => void;
   /**
    * Whether the card is in loading state (e.g., during deletion)
    */
@@ -62,62 +57,71 @@ export const BrandCard: React.FC<BrandCardProps> = ({
 
   const handleDelete = () => {
     if (onDelete && !isLoading) {
-      onDelete(brand.id);
+      onDelete(brand);
     }
   };
 
   return (
-    <Card
-      className={`w-full transition-all duration-200 hover:shadow-md ${isLoading ? 'opacity-50' : ''}`}
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.3 }}
+      whileHover={{ y: -4 }}
     >
-      <CardHeader className="pb-3">
-        <CardTitle className="text-xl font-bold text-foreground">
-          {brand.name}
-        </CardTitle>
-      </CardHeader>
-
-      <CardContent className="space-y-3">
-        {brand.createdAt && (
-          <div className="flex items-center gap-2 text-sm text-muted-foreground">
-            <Calendar className="h-4 w-4" />
-            <span>
-              Created: {new Date(brand.createdAt).toLocaleDateString()}
-            </span>
+      <Card
+        className={`w-full transition-all duration-200 hover:shadow-lg border-2 border-yellow-200 bg-gradient-to-br from-white to-yellow-50 ${
+          isLoading ? 'opacity-50' : ''
+        }`}
+      >
+        <CardHeader className="pb-3 flex flex-row items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="w-12 h-12 bg-gradient-to-br from-yellow-400 to-yellow-500 rounded-full flex items-center justify-center shadow-md">
+              <Building2 className="h-6 w-6 text-white" />
+            </div>
+            <div className="flex-1">
+              <CardTitle className="text-xl font-bold bg-gradient-to-r from-yellow-700 to-yellow-800 bg-clip-text text-transparent">
+                {brand.name}
+              </CardTitle>
+            </div>
           </div>
-        )}
 
-        {brand.updatedAt && brand.updatedAt !== brand.createdAt && (
-          <div className="text-xs text-muted-foreground pt-2 border-t">
-            <p>Updated: {new Date(brand.updatedAt).toLocaleDateString()}</p>
+          <div className="flex gap-2">
+            <Button
+              variant="outline"
+              size="icon"
+              onClick={handleEdit}
+              disabled={isLoading}
+              className="border-none hover:bg-none hover:text-yellow-500 cursor-pointer text-yellow-700 transition-all duration-200"
+              aria-label={`Editar ${brand.name}`}
+            >
+              <Edit className="h-4 w-4" />
+            </Button>
+
+            <Button
+              variant="outline"
+              size="icon"
+              onClick={handleDelete}
+              disabled={isLoading}
+              className="border-none hover:bg-none cursor-pointer hover:text-red-400 text-red-600 transition-all duration-200 ml-auto"
+              aria-label={`Deletar ${brand.name}`}
+            >
+              <Trash2 className="h-4 w-4" />
+            </Button>
           </div>
-        )}
-      </CardContent>
+        </CardHeader>
 
-      <CardFooter className="flex gap-2 pt-4">
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={handleEdit}
-          disabled={isLoading}
-          className="flex-1 sm:flex-none"
-          aria-label={`Edit ${brand.name}`}
-        >
-          <Edit className="h-4 w-4 mr-2" />
-          Edit
-        </Button>
-
-        <Button
-          variant="destructive"
-          size="sm"
-          onClick={handleDelete}
-          disabled={isLoading}
-          className="flex-1 sm:flex-none"
-          aria-label={`Delete ${brand.name}`}
-        >
-          <Trash2 className="h-4 w-4 mr-2" />
-          Delete
-        </Button>
-      </CardFooter>
-    </Card>
+        <CardContent className="space-y-3">
+          {brand.createdAt && (
+            <div className="flex items-center gap-2 text-sm text-gray-600">
+              <Calendar className="h-4 w-4 text-yellow-600" />
+              <span>
+                Criado em:{' '}
+                {new Date(brand.createdAt).toLocaleDateString('pt-BR')}
+              </span>
+            </div>
+          )}
+        </CardContent>
+      </Card>
+    </motion.div>
   );
 };

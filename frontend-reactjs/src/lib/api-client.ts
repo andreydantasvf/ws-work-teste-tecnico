@@ -23,7 +23,6 @@ class ApiClient {
 
     const config: RequestInit = {
       headers: {
-        'Content-Type': 'application/json',
         ...options.headers
       },
       ...options
@@ -56,19 +55,23 @@ class ApiClient {
   async post<T>(endpoint: string, data?: unknown): Promise<T> {
     return this.request<T>(endpoint, {
       method: 'POST',
-      body: data ? JSON.stringify(data) : undefined
+      body: data ? JSON.stringify(data) : undefined,
+      headers: { 'Content-Type': 'application/json' }
     });
   }
 
   async put<T>(endpoint: string, data?: unknown): Promise<T> {
     return this.request<T>(endpoint, {
       method: 'PUT',
-      body: data ? JSON.stringify(data) : undefined
+      body: data ? JSON.stringify(data) : undefined,
+      headers: { 'Content-Type': 'application/json' }
     });
   }
 
   async delete<T>(endpoint: string): Promise<T> {
-    return this.request<T>(endpoint, { method: 'DELETE' });
+    return this.request<T>(endpoint, {
+      method: 'DELETE'
+    });
   }
 }
 

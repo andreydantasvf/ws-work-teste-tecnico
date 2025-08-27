@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { QueryProvider } from '@/lib/query-provider';
 import { SidebarProvider } from '@/components/ui/sidebar';
 import { AppSidebar, type PageType } from '@/components/layout/app-sidebar';
+import { Toaster } from '@/components/ui/sonner';
 import { BrandsPage } from '@/components/brands/brands-page';
 import { DashboardPage } from '@/components/pages/dashboard-page';
 import { ModelsPage } from '@/components/pages/models-page';
@@ -29,7 +30,7 @@ function App() {
   return (
     <QueryProvider>
       <SidebarProvider defaultOpen={true}>
-        <div className="min-h-screen overflow-x-hidden bg-slate-100 flex">
+        <div className="min-h-screen overflow-x-hidden w-full bg-slate-100 flex">
           <AppSidebar currentPage={currentPage} onPageChange={setCurrentPage} />
           <main className="flex-1 overflow-auto overflow-x-hidden">
             <AnimatePresence mode="wait">
@@ -46,6 +47,7 @@ function App() {
             </AnimatePresence>
           </main>
         </div>
+        <Toaster />
       </SidebarProvider>
     </QueryProvider>
   );
