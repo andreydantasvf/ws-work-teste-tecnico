@@ -29,9 +29,9 @@ function App() {
   return (
     <QueryProvider>
       <SidebarProvider defaultOpen={true}>
-        <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-yellow-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-700 flex">
+        <div className="min-h-screen overflow-x-hidden bg-slate-100 flex">
           <AppSidebar currentPage={currentPage} onPageChange={setCurrentPage} />
-          <main className="flex-1 overflow-auto">
+          <main className="flex-1 overflow-auto overflow-x-hidden">
             <AnimatePresence mode="wait">
               <motion.div
                 key={currentPage}
