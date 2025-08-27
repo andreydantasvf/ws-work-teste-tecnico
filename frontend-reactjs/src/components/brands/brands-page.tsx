@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
-import { Plus, Loader2, AlertCircle, Building2 } from 'lucide-react';
+import React, { useState, useMemo } from 'react';
+import { Plus, Loader2, AlertCircle, Building2, Search, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
 import { BrandCard } from '@/components/brands/brand-card';
 import { BrandModal } from '@/components/brands/brand-modal';
 import { ConfirmDeleteModal } from '@/components/ui/confirm-delete-modal';
@@ -44,12 +45,27 @@ export const BrandsPage: React.FC = () => {
     undefined
   );
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [searchFilter, setSearchFilter] = useState('');
 
   // React Query hooks
   const { data: brands = [], isLoading, error, refetch } = useBrands();
   const createBrandMutation = useCreateBrand();
   const updateBrandMutation = useUpdateBrand();
   const deleteBrandMutation = useDeleteBrand();
+
+  // Filter brands based on search
+  const filteredBrands = useMemo(() => {
+    if (!searchFilter.trim()) {
+      return brands;
+    }
+    return brands.filter((brand) =>
+      brand.name.toLowerCase().includes(searchFilter.toLowerCase())
+    );
+  }, [brands, searchFilter]);
+
+  const clearSearch = () => {
+    setSearchFilter('');
+  };
 
   const handleCreateBrand = async (data: CreateBrandPayload) => {
     const loadingToast = toast.loading('⏳ Criando marca...', {
@@ -230,8 +246,79 @@ export const BrandsPage: React.FC = () => {
           </Button>
         </motion.div>
 
+        {/* Search Filter */}
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.1 }}
+          className="mb-8"
+        >
+          <div className="relative max-w-md mx-auto">
+            <div className="relative">
+              <Search className="absolute z-10 left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-yellow-600" />
+              <Input
+                type="text"
+                placeholder="Buscar marcas..."
+                value={searchFilter}
+                onChange={(e) => setSearchFilter(e.target.value)}
+                className="pl-12 pr-12 py-3 text-lg border-2 border-yellow-200 focus:border-yellow-400 bg-white/80 backdrop-blur-sm rounded-xl shadow-md hover:shadow-lg transition-all duration-200"
+              />
+              {searchFilter && (
+                <Button
+                  onClick={clearSearch}
+                  variant="ghost"
+                  size="sm"
+                  className="absolute right-2 top-1/2 transform -translate-y-1/2 h-8 w-8 p-0 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-full"
+                >
+                  <X className="h-4 w-4" />
+                </Button>
+              )}
+            </div>
+            {searchFilter && (
+              <motion.p
+                initial={{ opacity: 0, y: -5 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.2 }}
+                className="text-sm text-gray-600 mt-2 text-center"
+              >
+                {filteredBrands.length} marca(s) encontrada(s) para "
+                {searchFilter}"
+              </motion.p>
+            )}
+          </div>
+        </motion.div>
+
         {/* Brands Grid */}
-        {brands.length === 0 ? (
+        {filteredBrands.length === 0 && searchFilter ? (
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.5 }}
+          >
+            <Card className="p-12 border-2 border-yellow-200 bg-gradient-to-br from-white to-yellow-50">
+              <CardContent className="flex flex-col items-center justify-center text-center space-y-6">
+                <div className="w-20 h-20 bg-gradient-to-br from-gray-400 to-gray-500 rounded-full flex items-center justify-center shadow-lg">
+                  <Search className="h-10 w-10 text-white" />
+                </div>
+                <div>
+                  <h3 className="text-2xl font-bold text-gray-700">
+                    Nenhuma marca encontrada
+                  </h3>
+                  <p className="text-gray-600 mt-2 text-lg">
+                    Não foram encontradas marcas com o termo "{searchFilter}".
+                  </p>
+                </div>
+                <Button
+                  onClick={clearSearch}
+                  variant="outline"
+                  className="border-yellow-300 text-yellow-700 hover:bg-yellow-50"
+                >
+                  Limpar Filtro
+                </Button>
+              </CardContent>
+            </Card>
+          </motion.div>
+        ) : filteredBrands.length === 0 ? (
           <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
@@ -268,7 +355,7 @@ export const BrandsPage: React.FC = () => {
             transition={{ duration: 0.5, delay: 0.2 }}
             className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"
           >
-            {brands.map((brand, index) => (
+            {filteredBrands.map((brand, index) => (
               <motion.div
                 key={brand.id}
                 initial={{ opacity: 0, y: 20 }}
