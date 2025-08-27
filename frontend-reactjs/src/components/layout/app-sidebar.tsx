@@ -29,28 +29,28 @@ const menuItems: MenuItem[] = [
     title: 'Dashboard',
     icon: LayoutDashboard,
     description: 'Visão geral do sistema',
-    color: 'text-blue-600 dark:text-yellow-400'
+    color: 'text-yellow-600'
   },
   {
     id: 'brands',
     title: 'Marcas',
     icon: Building2,
     description: 'Gerenciar marcas de veículos',
-    color: 'text-blue-700 dark:text-yellow-300'
+    color: 'text-yellow-700'
   },
   {
     id: 'models',
     title: 'Modelos',
     icon: Wrench,
     description: 'Gerenciar modelos de carros',
-    color: 'text-blue-800 dark:text-yellow-200'
+    color: 'text-yellow-800'
   },
   {
     id: 'cars',
     title: 'Carros',
     icon: Car,
     description: 'Inventário de veículos',
-    color: 'text-blue-900 dark:text-yellow-100'
+    color: 'text-yellow-900'
   }
 ];
 
@@ -59,24 +59,6 @@ interface AppSidebarProps {
   onPageChange: (page: PageType) => void;
 }
 
-/**
- * AppSidebar component for navigation in the SPA
- *
- * Features:
- * - Collapsible sidebar with icon mode
- * - Highlighted active page
- * - Vibrant color scheme (blue, yellow, white)
- * - Responsive design
- * - Smooth animations
- *
- * @example
- * ```tsx
- * <AppSidebar
- *   currentPage="brands"
- *   onPageChange={(page) => setCurrentPage(page)}
- * />
- * ```
- */
 export function AppSidebar({ currentPage, onPageChange }: AppSidebarProps) {
   const { state, toggleSidebar } = useSidebar();
   const isCollapsed = state === 'collapsed';
@@ -86,10 +68,10 @@ export function AppSidebar({ currentPage, onPageChange }: AppSidebarProps) {
       'flex items-center space-x-3 px-4 py-3 rounded-lg transition-all duration-200 cursor-pointer group';
 
     if (currentPage === pageId) {
-      return `${baseClasses} bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-lg transform scale-[1.02] dark:from-yellow-500 dark:to-yellow-600 dark:text-gray-900`;
+      return `${baseClasses} bg-gradient-to-r from-yellow-600 to-yellow-700 text-white shadow-lg transform scale-[1.02]`;
     }
 
-    return `${baseClasses} hover:bg-gradient-to-r hover:from-blue-50 hover:to-blue-100 text-gray-700 hover:text-blue-800 hover:shadow-md dark:text-gray-300 dark:hover:from-yellow-50 dark:hover:to-yellow-100 dark:hover:text-gray-800`;
+    return `${baseClasses} hover:bg-gradient-to-r hover:from-yellow-100 hover:to-yellow-200 text-gray-700 hover:text-yellow-800 hover:shadow-md`;
   };
 
   const getIconClass = (pageId: PageType, baseColor: string) => {
@@ -103,13 +85,10 @@ export function AppSidebar({ currentPage, onPageChange }: AppSidebarProps) {
   };
 
   return (
-    <Sidebar
-      className="border-r-2 border-blue-100 dark:border-yellow-800"
-      collapsible="icon"
-    >
-      <SidebarContent className="bg-gradient-to-b from-white to-blue-50 dark:from-gray-900 dark:to-gray-800 shadow-lg">
+    <Sidebar className="border-r-2 border-yellow-500" collapsible="icon">
+      <SidebarContent className="bg-slate-100 shadow-lg">
         {/* Header with toggle button */}
-        <div className="flex items-center justify-between p-4 border-b border-blue-100 dark:border-yellow-800">
+        <div className="flex items-center justify-between p-4 border-b border-yellow-300">
           <AnimatePresence>
             {!isCollapsed && (
               <motion.h2
@@ -117,7 +96,7 @@ export function AppSidebar({ currentPage, onPageChange }: AppSidebarProps) {
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, x: -20 }}
                 transition={{ duration: 0.3 }}
-                className="text-xl font-bold  whitespace-nowrap overflow-hidden bg-gradient-to-r from-blue-600 to-blue-800 bg-clip-text text-transparent dark:from-yellow-400 dark:to-yellow-600"
+                className="text-xl font-bold  whitespace-nowrap overflow-hidden bg-gradient-to-r bg-clip-text text-transparent from-yellow-500 to-yellow-600"
               >
                 WS Vehicle Manager
               </motion.h2>
@@ -127,16 +106,13 @@ export function AppSidebar({ currentPage, onPageChange }: AppSidebarProps) {
             variant="ghost"
             size="icon"
             onClick={toggleSidebar}
-            className="h-8 w-8 text-blue-600 hover:bg-blue-100 dark:text-yellow-400 dark:hover:bg-yellow-900 transition-all duration-200 hover:scale-110"
+            className="h-8 w-8 cursor-pointer text-yellow-600 hover:bg-yellow-600 hover:text-white transition-all duration-200 hover:scale-110"
           >
-            <Menu className="h-4 w-4" />
+            <Menu className="h-5 w-5" />
           </Button>
         </div>
 
         <SidebarGroup className="py-6">
-          {/* <SidebarGroupLabel className="text-xs whitespace-nowrap overflow-hidden font-semibold text-blue-600 dark:text-yellow-400 uppercase tracking-wider px-4 mb-4">
-            {!isCollapsed && 'Menu Principal'}
-          </SidebarGroupLabel> */}
           <SidebarGroupContent>
             <SidebarMenu className="space-y-2">
               {menuItems.map((item, index) => (
@@ -188,9 +164,9 @@ export function AppSidebar({ currentPage, onPageChange }: AppSidebarProps) {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: 20 }}
               transition={{ duration: 0.3 }}
-              className="mt-auto p-4 border-t border-blue-100 dark:border-yellow-800"
+              className="mt-auto p-4 border-t border-yellow-300"
             >
-              <div className="text-xs text-center text-blue-500 dark:text-yellow-500">
+              <div className="text-xs text-center text-yellow-600">
                 © 2025 WS Vehicle Manager
               </div>
             </motion.div>
