@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { Car, Plus, Edit, Trash2 } from 'lucide-react';
+import { Car, Plus } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import {
@@ -9,14 +9,9 @@ import {
   CardHeader,
   CardTitle
 } from '@/components/ui/card';
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow
-} from '@/components/ui/table';
+import { DataTable } from '@/components/ui/data-table';
+import { createCarsColumns, type CarWithDetails } from './cars-columns';
+import { ConfirmDeleteModal } from '@/components/ui/confirm-delete-modal';
 import {
   Dialog,
   DialogContent,
@@ -41,11 +36,6 @@ import { useCars } from '@/hooks/use-cars';
 import { carService } from '@/services/car.service';
 import type { Car as CarType } from '@/types/car';
 import type { Model } from '@/types/model';
-
-interface CarWithDetails extends CarType {
-  model_name?: string;
-  brand_name?: string;
-}
 
 interface ModelWithBrand extends Model {
   brand_name?: string;
@@ -78,7 +68,11 @@ export function CarsPage() {
   const [models, setModels] = useState<ModelWithBrand[]>([]);
   const [loading, setLoading] = useState(true);
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [editingCar, setEditingCar] = useState<CarType | null>(null);
+  const [carToDelete, setCarToDelete] = useState<CarType | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
   const [formData, setFormData] = useState({
     modelId: '',
     year: '',
@@ -130,6 +124,8 @@ export function CarsPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setIsSubmitting(true);
+
     try {
       const carData = {
         modelId: Number.parseInt(formData.modelId),
@@ -159,18 +155,25 @@ export function CarsPage() {
       refetchCars();
     } catch {
       toast.error('Falha ao salvar carro');
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
-  const handleDelete = async (id: number) => {
-    if (!confirm('Tem certeza que deseja excluir este carro?')) return;
+  const handleDelete = async () => {
+    if (!carToDelete) return;
 
+    setIsDeleting(true);
     try {
-      await carService.deleteCar(id);
+      await carService.deleteCar(carToDelete.id);
       toast.success('Carro excluído com sucesso');
       refetchCars();
+      setDeleteModalOpen(false);
+      setCarToDelete(null);
     } catch {
       toast.error('Falha ao excluir carro');
+    } finally {
+      setIsDeleting(false);
     }
   };
 
@@ -198,10 +201,13 @@ export function CarsPage() {
     setDialogOpen(true);
   };
 
-  const formatDate = (dateString?: string) => {
-    if (!dateString) return 'Data não disponível';
-    return new Date(dateString).toLocaleString('pt-BR');
+  const openDeleteModal = (car: CarType) => {
+    setCarToDelete(car);
+    setDeleteModalOpen(true);
   };
+
+  // Create columns with the handlers
+  const columns = createCarsColumns(openEditDialog, openDeleteModal);
 
   const handleNavigateBack = () => {
     navigate('/');
@@ -279,63 +285,12 @@ export function CarsPage() {
                   </Button>
                 </div>
               ) : (
-                <div className="overflow-x-auto">
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead>ID</TableHead>
-                        <TableHead>Marca</TableHead>
-                        <TableHead>Modelo</TableHead>
-                        <TableHead>Ano</TableHead>
-                        <TableHead>Combustível</TableHead>
-                        <TableHead>Portas</TableHead>
-                        <TableHead>Cor</TableHead>
-                        <TableHead>Cadastro</TableHead>
-                        <TableHead className="text-right">Ações</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {cars.map((car) => (
-                        <TableRow key={car.id}>
-                          <TableCell className="font-medium">
-                            {car.id}
-                          </TableCell>
-                          <TableCell>{car.brand_name}</TableCell>
-                          <TableCell>{car.model_name}</TableCell>
-                          <TableCell>{car.year}</TableCell>
-                          <TableCell className="capitalize">
-                            {car.fuel}
-                          </TableCell>
-                          <TableCell>{car.numberOfPorts}</TableCell>
-                          <TableCell className="capitalize">
-                            {car.color}
-                          </TableCell>
-                          <TableCell className="text-sm text-muted-foreground">
-                            {formatDate(car.createdAt)}
-                          </TableCell>
-                          <TableCell className="text-right">
-                            <div className="flex justify-end gap-2">
-                              <Button
-                                variant="outline"
-                                size="sm"
-                                onClick={() => openEditDialog(car)}
-                              >
-                                <Edit className="h-4 w-4" />
-                              </Button>
-                              <Button
-                                variant="outline"
-                                size="sm"
-                                onClick={() => handleDelete(car.id)}
-                              >
-                                <Trash2 className="h-4 w-4" />
-                              </Button>
-                            </div>
-                          </TableCell>
-                        </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
-                </div>
+                <DataTable
+                  columns={columns}
+                  data={cars}
+                  searchKey="model_name"
+                  searchPlaceholder="Filtrar carros por modelo..."
+                />
               )}
             </CardContent>
           </Card>
@@ -457,13 +412,27 @@ export function CarsPage() {
                 >
                   Cancelar
                 </Button>
-                <Button type="submit">
-                  {editingCar ? 'Atualizar' : 'Criar'}
+                <Button type="submit" disabled={isSubmitting}>
+                  {isSubmitting
+                    ? 'Salvando...'
+                    : editingCar
+                      ? 'Atualizar'
+                      : 'Criar'}
                 </Button>
               </DialogFooter>
             </form>
           </DialogContent>
         </Dialog>
+
+        {/* Delete Confirmation Modal */}
+        <ConfirmDeleteModal
+          isOpen={deleteModalOpen}
+          onClose={() => setDeleteModalOpen(false)}
+          onConfirm={handleDelete}
+          title="Excluir Carro"
+          description={`Tem certeza que deseja excluir este carro? Esta ação não pode ser desfeita.`}
+          isLoading={isDeleting}
+        />
       </main>
     </div>
   );

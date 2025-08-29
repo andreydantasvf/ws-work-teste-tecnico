@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Building2, Plus, Edit, Trash2 } from 'lucide-react';
+import { Building2, Plus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
   Card,
@@ -9,14 +9,7 @@ import {
   CardHeader,
   CardTitle
 } from '@/components/ui/card';
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow
-} from '@/components/ui/table';
+import { DataTable } from '@/components/ui/data-table';
 import {
   Dialog,
   DialogContent,
@@ -33,6 +26,7 @@ import { useBrands } from '@/hooks/use-brands';
 import { brandService } from '@/services/brand.service';
 import { useQueryClient } from '@tanstack/react-query';
 import type { Brand, CreateBrandPayload } from '@/types/brand';
+import { createBrandsColumns } from './brands-columns';
 
 /**
  * Brands management page component
@@ -118,6 +112,12 @@ export function BrandsPage() {
     navigate('/');
   };
 
+  // Create columns with handlers
+  const columns = createBrandsColumns({
+    onEdit: openEditDialog,
+    onDelete: openDeleteModal
+  });
+
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
@@ -167,49 +167,12 @@ export function BrandsPage() {
                 </Button>
               </div>
             ) : (
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>ID</TableHead>
-                    <TableHead>Nome da Marca</TableHead>
-                    <TableHead>Data de Criação</TableHead>
-                    <TableHead className="text-right">Ações</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {brands.map((brand) => (
-                    <TableRow key={brand.id}>
-                      <TableCell className="font-medium">{brand.id}</TableCell>
-                      <TableCell>{brand.name}</TableCell>
-                      <TableCell>
-                        {brand.createdAt
-                          ? new Date(brand.createdAt).toLocaleDateString(
-                              'pt-BR'
-                            )
-                          : 'N/A'}
-                      </TableCell>
-                      <TableCell className="text-right">
-                        <div className="flex justify-end gap-2">
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => openEditDialog(brand)}
-                          >
-                            <Edit className="h-4 w-4" />
-                          </Button>
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => openDeleteModal(brand)}
-                          >
-                            <Trash2 className="h-4 w-4" />
-                          </Button>
-                        </div>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
+              <DataTable
+                columns={columns}
+                data={brands}
+                searchKey="name"
+                searchPlaceholder="Filtrar por nome da marca..."
+              />
             )}
           </CardContent>
         </Card>

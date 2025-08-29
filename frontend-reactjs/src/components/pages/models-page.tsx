@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { Wrench, Plus, Edit, Trash2 } from 'lucide-react';
+import { Wrench, Plus } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import {
@@ -9,14 +9,9 @@ import {
   CardHeader,
   CardTitle
 } from '@/components/ui/card';
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow
-} from '@/components/ui/table';
+import { DataTable } from '@/components/ui/data-table';
+import { createModelsColumns, type ModelWithBrand } from './models-columns';
+import { ConfirmDeleteModal } from '@/components/ui/confirm-delete-modal';
 import {
   Dialog,
   DialogContent,
@@ -40,10 +35,6 @@ import { useModels } from '@/hooks/use-models';
 import { modelService } from '@/services/model.service';
 import type { Model } from '@/types/model';
 
-interface ModelWithBrand extends Model {
-  brand_name?: string;
-}
-
 /**
  * Models page component
  * Manages all vehicle models in the system
@@ -53,7 +44,11 @@ export function ModelsPage() {
   const [models, setModels] = useState<ModelWithBrand[]>([]);
   const [loading, setLoading] = useState(true);
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [editingModel, setEditingModel] = useState<Model | null>(null);
+  const [modelToDelete, setModelToDelete] = useState<Model | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
   const [formData, setFormData] = useState({
     name: '',
     brandId: '',
@@ -89,6 +84,8 @@ export function ModelsPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setIsSubmitting(true);
+
     try {
       const modelData = {
         name: formData.name,
@@ -110,18 +107,25 @@ export function ModelsPage() {
       refetchModels();
     } catch {
       toast.error('Falha ao salvar modelo');
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
-  const handleDelete = async (id: number) => {
-    if (!confirm('Tem certeza que deseja excluir este modelo?')) return;
+  const handleDelete = async () => {
+    if (!modelToDelete) return;
 
+    setIsDeleting(true);
     try {
-      await modelService.deleteModel(id);
+      await modelService.deleteModel(modelToDelete.id);
       toast.success('Modelo excluído com sucesso');
       refetchModels();
+      setDeleteModalOpen(false);
+      setModelToDelete(null);
     } catch {
       toast.error('Falha ao excluir modelo');
+    } finally {
+      setIsDeleting(false);
     }
   };
 
@@ -141,12 +145,13 @@ export function ModelsPage() {
     setDialogOpen(true);
   };
 
-  const formatCurrency = (value: number) => {
-    return new Intl.NumberFormat('pt-BR', {
-      style: 'currency',
-      currency: 'BRL'
-    }).format(value);
+  const openDeleteModal = (model: Model) => {
+    setModelToDelete(model);
+    setDeleteModalOpen(true);
   };
+
+  // Create columns with the handlers
+  const columns = createModelsColumns(openEditDialog, openDeleteModal);
 
   const handleNavigateBack = () => {
     navigate('/');
@@ -220,47 +225,12 @@ export function ModelsPage() {
                   </Button>
                 </div>
               ) : (
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>ID</TableHead>
-                      <TableHead>Nome do Modelo</TableHead>
-                      <TableHead>Marca</TableHead>
-                      <TableHead>Valor FIPE</TableHead>
-                      <TableHead className="text-right">Ações</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {models.map((model) => (
-                      <TableRow key={model.id}>
-                        <TableCell className="font-medium">
-                          {model.id}
-                        </TableCell>
-                        <TableCell>{model.name}</TableCell>
-                        <TableCell>{model.brand_name}</TableCell>
-                        <TableCell>{formatCurrency(model.fipeValue)}</TableCell>
-                        <TableCell className="text-right">
-                          <div className="flex justify-end gap-2">
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              onClick={() => openEditDialog(model)}
-                            >
-                              <Edit className="h-4 w-4" />
-                            </Button>
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              onClick={() => handleDelete(model.id)}
-                            >
-                              <Trash2 className="h-4 w-4" />
-                            </Button>
-                          </div>
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
+                <DataTable
+                  columns={columns}
+                  data={models}
+                  searchKey="name"
+                  searchPlaceholder="Filtrar modelos..."
+                />
               )}
             </CardContent>
           </Card>
@@ -337,13 +307,27 @@ export function ModelsPage() {
                 >
                   Cancelar
                 </Button>
-                <Button type="submit">
-                  {editingModel ? 'Atualizar' : 'Criar'}
+                <Button type="submit" disabled={isSubmitting}>
+                  {isSubmitting
+                    ? 'Salvando...'
+                    : editingModel
+                      ? 'Atualizar'
+                      : 'Criar'}
                 </Button>
               </DialogFooter>
             </form>
           </DialogContent>
         </Dialog>
+
+        {/* Delete Confirmation Modal */}
+        <ConfirmDeleteModal
+          isOpen={deleteModalOpen}
+          onClose={() => setDeleteModalOpen(false)}
+          onConfirm={handleDelete}
+          title="Excluir Modelo"
+          description={`Tem certeza que deseja excluir o modelo "${modelToDelete?.name}"? Esta ação não pode ser desfeita.`}
+          isLoading={isDeleting}
+        />
       </main>
     </div>
   );
