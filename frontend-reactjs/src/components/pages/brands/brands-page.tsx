@@ -21,6 +21,7 @@ import {
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { ConfirmDeleteModal } from '@/components/ui/confirm-delete-modal';
+import { PageSkeleton } from '@/components/ui/skeleton';
 import { toast } from 'sonner';
 import { useBrands } from '@/hooks/use-brands';
 import { brandService } from '@/services/brand.service';
@@ -43,7 +44,12 @@ export function BrandsPage() {
   const [isDeleting, setIsDeleting] = useState(false);
 
   const queryClient = useQueryClient();
-  const { data: brands = [] } = useBrands();
+  const { data: brands = [], isLoading } = useBrands();
+
+  // Show skeleton while loading
+  if (isLoading) {
+    return <PageSkeleton />;
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

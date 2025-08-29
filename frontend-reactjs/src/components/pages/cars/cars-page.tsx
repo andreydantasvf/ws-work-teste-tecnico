@@ -29,6 +29,7 @@ import {
   SelectTrigger,
   SelectValue
 } from '@/components/ui/select';
+import { PageSkeleton } from '@/components/ui/skeleton';
 import { toast } from 'sonner';
 import { useBrands } from '@/hooks/use-brands';
 import { useModels } from '@/hooks/use-models';
@@ -66,7 +67,6 @@ export function CarsPage() {
   const navigate = useNavigate();
   const [cars, setCars] = useState<CarWithDetails[]>([]);
   const [models, setModels] = useState<ModelWithBrand[]>([]);
-  const [loading, setLoading] = useState(true);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [editingCar, setEditingCar] = useState<CarType | null>(null);
@@ -89,6 +89,8 @@ export function CarsPage() {
     isLoading: carsLoading,
     refetch: refetchCars
   } = useCars();
+
+  const loading = brandsLoading || modelsLoading || carsLoading;
 
   const loadCarsWithDetails = useCallback(() => {
     // Enrich models with brand names
@@ -116,11 +118,15 @@ export function CarsPage() {
   }, [brands, modelsData, carsData]);
 
   useEffect(() => {
-    if (!brandsLoading && !modelsLoading && !carsLoading) {
+    if (!loading) {
       loadCarsWithDetails();
-      setLoading(false);
     }
-  }, [loadCarsWithDetails, brandsLoading, modelsLoading, carsLoading]);
+  }, [loadCarsWithDetails, loading]);
+
+  // Show skeleton while loading
+  if (loading) {
+    return <PageSkeleton />;
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -295,15 +301,7 @@ export function CarsPage() {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              {loading ? (
-                <div className="text-center py-8">
-                  <div className="animate-pulse space-y-4">
-                    <div className="h-4 bg-muted rounded w-3/4 mx-auto"></div>
-                    <div className="h-4 bg-muted rounded w-1/2 mx-auto"></div>
-                    <div className="h-4 bg-muted rounded w-2/3 mx-auto"></div>
-                  </div>
-                </div>
-              ) : cars.length === 0 ? (
+              {cars.length === 0 ? (
                 <div className="text-center py-12 text-muted-foreground">
                   <div className="p-4 rounded-full bg-muted/50 w-fit mx-auto mb-6">
                     <Car className="h-12 w-12 opacity-50" />

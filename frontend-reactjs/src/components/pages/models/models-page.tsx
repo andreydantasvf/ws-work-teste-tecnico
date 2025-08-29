@@ -29,6 +29,7 @@ import {
   SelectTrigger,
   SelectValue
 } from '@/components/ui/select';
+import { PageSkeleton } from '@/components/ui/skeleton';
 import { toast } from 'sonner';
 import { useBrands } from '@/hooks/use-brands';
 import { useModels } from '@/hooks/use-models';
@@ -42,7 +43,6 @@ import type { Model } from '@/types/model';
 export function ModelsPage() {
   const navigate = useNavigate();
   const [models, setModels] = useState<ModelWithBrand[]>([]);
-  const [loading, setLoading] = useState(true);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [editingModel, setEditingModel] = useState<Model | null>(null);
@@ -76,11 +76,15 @@ export function ModelsPage() {
   }, [brands, modelsData]);
 
   useEffect(() => {
-    if (!brandsLoading && !modelsLoading) {
-      loadModelsWithBrands();
-      setLoading(false);
-    }
-  }, [loadModelsWithBrands, brandsLoading, modelsLoading]);
+    loadModelsWithBrands();
+  }, [loadModelsWithBrands]);
+
+  const loading = brandsLoading || modelsLoading;
+
+  // Show skeleton while loading
+  if (loading) {
+    return <PageSkeleton />;
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -237,15 +241,7 @@ export function ModelsPage() {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              {loading ? (
-                <div className="text-center py-8">
-                  <div className="animate-pulse space-y-4">
-                    <div className="h-4 bg-muted rounded w-3/4 mx-auto"></div>
-                    <div className="h-4 bg-muted rounded w-1/2 mx-auto"></div>
-                    <div className="h-4 bg-muted rounded w-2/3 mx-auto"></div>
-                  </div>
-                </div>
-              ) : models.length === 0 ? (
+              {models.length === 0 ? (
                 <div className="text-center py-12 text-muted-foreground">
                   <div className="p-4 rounded-full bg-muted/50 w-fit mx-auto mb-6">
                     <Wrench className="h-12 w-12 opacity-50" />
