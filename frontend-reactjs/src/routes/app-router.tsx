@@ -4,10 +4,6 @@ import { BrandsPage } from '@/components/pages/brands-page';
 import { ModelsPage } from '@/components/pages/models-page';
 import { CarsPage } from '@/components/pages/cars-page';
 
-/**
- * App Router component
- * Handles routing between different pages
- */
 export function AppRouter() {
   return (
     <BrowserRouter>

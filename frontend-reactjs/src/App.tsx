@@ -3,10 +3,6 @@ import { Toaster } from '@/components/ui/sonner';
 import { AppRouter } from '@/routes/app-router';
 import '@/index.css';
 
-/**
- * Main App component
- * Sets up the application with React Query and routing
- */
 function App() {
   return (
     <QueryProvider>

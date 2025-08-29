@@ -1,6 +1,5 @@
-/**
- * Car entity type definition (matches backend schema)
- */
+import type { ApiResponse } from '@/lib/api-client';
+
 export interface Car {
   id: number;
   year: number;
@@ -12,9 +11,6 @@ export interface Car {
   updatedAt?: string;
 }
 
-/**
- * Car creation payload
- */
 export interface CreateCarPayload {
   year: number;
   fuel: string;
@@ -23,9 +19,6 @@ export interface CreateCarPayload {
   modelId: number;
 }
 
-/**
- * Car update payload
- */
 export interface UpdateCarPayload {
   year: number;
   fuel: string;
@@ -34,20 +27,6 @@ export interface UpdateCarPayload {
   modelId: number;
 }
 
-/**
- * API response wrapper (matches backend response format)
- */
-export interface ApiResponse<T> {
-  success: true;
-  data: T;
-}
-
-/**
- * API response for car list
- */
 export type CarsListResponse = ApiResponse<Car[]>;
 
-/**
- * API response for single car
- */
 export type CarResponse = ApiResponse<Car>;

@@ -6,7 +6,6 @@ import type {
   UpdateBrandPayload
 } from '@/types/brand';
 
-// Query keys for better cache management
 export const brandKeys = {
   all: ['brands'] as const,
   lists: () => [...brandKeys.all, 'list'] as const,
@@ -15,9 +14,6 @@ export const brandKeys = {
   detail: (id: number) => [...brandKeys.details(), id] as const
 };
 
-/**
- * Hook to fetch all brands
- */
 export function useBrands() {
   return useQuery({
     queryKey: brandKeys.lists(),
@@ -26,9 +22,6 @@ export function useBrands() {
   });
 }
 
-/**
- * Hook to fetch a single brand by ID
- */
 export function useBrand(id: number) {
   return useQuery({
     queryKey: brandKeys.detail(id),
@@ -38,9 +31,6 @@ export function useBrand(id: number) {
   });
 }
 
-/**
- * Hook to create a new brand
- */
 export function useCreateBrand() {
   const queryClient = useQueryClient();
 
@@ -48,7 +38,6 @@ export function useCreateBrand() {
     mutationFn: (payload: CreateBrandPayload) =>
       brandService.createBrand(payload),
     onSuccess: (newBrand: Brand) => {
-      // Update the brands list cache
       queryClient.setQueryData(
         brandKeys.lists(),
         (oldData: Brand[] | undefined) => {
@@ -57,15 +46,11 @@ export function useCreateBrand() {
         }
       );
 
-      // Set the new brand in detail cache
       queryClient.setQueryData(brandKeys.detail(newBrand.id), newBrand);
     }
   });
 }
 
-/**
- * Hook to update an existing brand
- */
 export function useUpdateBrand() {
   const queryClient = useQueryClient();
 
@@ -78,7 +63,6 @@ export function useUpdateBrand() {
       payload: UpdateBrandPayload;
     }) => brandService.updateBrand(id, payload),
     onSuccess: (updatedBrand: Brand) => {
-      // Update the brands list cache
       queryClient.setQueryData(
         brandKeys.lists(),
         (oldData: Brand[] | undefined) => {
@@ -89,22 +73,17 @@ export function useUpdateBrand() {
         }
       );
 
-      // Update the detail cache
       queryClient.setQueryData(brandKeys.detail(updatedBrand.id), updatedBrand);
     }
   });
 }
 
-/**
- * Hook to delete a brand
- */
 export function useDeleteBrand() {
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: (id: number) => brandService.deleteBrand(id),
     onSuccess: (_, deletedId) => {
-      // Remove from brands list cache
       queryClient.setQueryData(
         brandKeys.lists(),
         (oldData: Brand[] | undefined) => {
@@ -113,7 +92,6 @@ export function useDeleteBrand() {
         }
       );
 
-      // Remove from detail cache
       queryClient.removeQueries({ queryKey: brandKeys.detail(deletedId) });
     }
   });
