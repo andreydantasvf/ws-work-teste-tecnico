@@ -94,14 +94,19 @@ export function DashboardPage() {
 
   const getFuelBadgeColor = (fuel: string) => {
     const colors: Record<string, string> = {
-      Gasolina: 'bg-red-100 text-red-800',
-      Etanol: 'bg-green-100 text-green-800',
-      Flex: 'bg-blue-100 text-blue-800',
-      Diesel: 'bg-yellow-100 text-yellow-800',
-      Elétrico: 'bg-emerald-100 text-emerald-800',
-      Híbrido: 'bg-purple-100 text-purple-800'
+      Gasolina:
+        'bg-red-500/10 text-red-600 dark:text-red-400 border-red-500/20',
+      Etanol:
+        'bg-green-500/10 text-green-600 dark:text-green-400 border-green-500/20',
+      Flex: 'bg-blue-500/10 text-blue-600 dark:text-blue-400 border-blue-500/20',
+      Diesel:
+        'bg-yellow-500/10 text-yellow-600 dark:text-yellow-400 border-yellow-500/20',
+      Elétrico:
+        'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20',
+      Híbrido:
+        'bg-purple-500/10 text-purple-600 dark:text-purple-400 border-purple-500/20'
     };
-    return colors[fuel] || 'bg-gray-100 text-gray-800';
+    return colors[fuel] || 'bg-muted text-muted-foreground border-border';
   };
 
   const handleNavigate = (page: 'brands' | 'models' | 'cars') => {
@@ -109,19 +114,23 @@ export function DashboardPage() {
   };
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-gradient-to-br from-background to-muted/20">
       {/* Header */}
-      <header className="border-b border-border bg-card">
+      <header className="sticky top-0 z-40 border-b border-border/40 bg-background/80 backdrop-blur-xl">
         <div className="container mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <Car className="h-8 w-8 text-primary" />
-              <h1 className="text-2xl font-bold text-foreground">
-                AutoManager
-              </h1>
-            </div>
-            <div className="text-sm text-muted-foreground">
-              Sistema de Gestão Automotiva
+              <div className="p-2 rounded-xl bg-primary/10 border border-primary/20">
+                <Car className="h-6 w-6 text-primary" />
+              </div>
+              <div>
+                <h1 className="text-2xl font-bold bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text text-transparent">
+                  WS - AutoManager
+                </h1>
+                <p className="text-xs text-muted-foreground">
+                  Sistema de Gestão Automotiva
+                </p>
+              </div>
             </div>
           </div>
         </div>
@@ -129,28 +138,34 @@ export function DashboardPage() {
 
       {/* Main Content */}
       <main className="container mx-auto px-6 py-8">
-        <div className="mb-8">
-          <h2 className="text-3xl font-bold text-foreground mb-2">Dashboard</h2>
-          <p className="text-muted-foreground">
+        <div className="mb-8 animate-fade-in">
+          <h2 className="text-4xl font-bold bg-gradient-to-r from-foreground to-primary bg-clip-text text-transparent mb-2">
+            Dashboard
+          </h2>
+          <p className="text-lg text-muted-foreground">
             Gerencie marcas, modelos e carros do seu sistema
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-          <Card className="hover:shadow-lg transition-shadow">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8 animate-slide-up">
+          <Card className="group hover:shadow-medium transition-all duration-300 border-border/50 hover:border-primary/30 bg-card/50 backdrop-blur-sm">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Marcas</CardTitle>
-              <Building2 className="h-4 w-4 text-muted-foreground" />
+              <CardTitle className="text-sm font-medium text-card-foreground">
+                Marcas
+              </CardTitle>
+              <div className="p-2 rounded-lg bg-blue-500/10 group-hover:bg-blue-500/20 transition-colors">
+                <Building2 className="h-4 w-4 text-blue-600 dark:text-blue-400" />
+              </div>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-primary">
+              <div className="text-3xl font-bold text-blue-600 dark:text-blue-400 mb-1">
                 {loading ? '...' : stats.totalBrands}
               </div>
-              <p className="text-xs text-muted-foreground">
+              <p className="text-xs text-muted-foreground mb-4">
                 Total de marcas cadastradas
               </p>
               <Button
-                className="w-full mt-4"
+                className="w-full bg-blue-500 hover:bg-blue-600 text-white border-0 shadow-soft"
                 size="sm"
                 onClick={() => handleNavigate('brands')}
               >
@@ -159,20 +174,24 @@ export function DashboardPage() {
             </CardContent>
           </Card>
 
-          <Card className="hover:shadow-lg transition-shadow">
+          <Card className="group hover:shadow-medium transition-all duration-300 border-border/50 hover:border-primary/30 bg-card/50 backdrop-blur-sm">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Modelos</CardTitle>
-              <Wrench className="h-4 w-4 text-muted-foreground" />
+              <CardTitle className="text-sm font-medium text-card-foreground">
+                Modelos
+              </CardTitle>
+              <div className="p-2 rounded-lg bg-green-500/10 group-hover:bg-green-500/20 transition-colors">
+                <Wrench className="h-4 w-4 text-green-600 dark:text-green-400" />
+              </div>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-primary">
+              <div className="text-3xl font-bold text-green-600 dark:text-green-400 mb-1">
                 {loading ? '...' : stats.totalModels}
               </div>
-              <p className="text-xs text-muted-foreground">
+              <p className="text-xs text-muted-foreground mb-4">
                 Total de modelos cadastrados
               </p>
               <Button
-                className="w-full mt-4"
+                className="w-full bg-green-500 hover:bg-green-600 text-white border-0 shadow-soft"
                 size="sm"
                 onClick={() => handleNavigate('models')}
               >
@@ -181,20 +200,24 @@ export function DashboardPage() {
             </CardContent>
           </Card>
 
-          <Card className="hover:shadow-lg transition-shadow">
+          <Card className="group hover:shadow-medium transition-all duration-300 border-border/50 hover:border-primary/30 bg-card/50 backdrop-blur-sm">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Carros</CardTitle>
-              <Car className="h-4 w-4 text-muted-foreground" />
+              <CardTitle className="text-sm font-medium text-card-foreground">
+                Carros
+              </CardTitle>
+              <div className="p-2 rounded-lg bg-purple-500/10 group-hover:bg-purple-500/20 transition-colors">
+                <Car className="h-4 w-4 text-purple-600 dark:text-purple-400" />
+              </div>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-primary">
+              <div className="text-3xl font-bold text-purple-600 dark:text-purple-400 mb-1">
                 {loading ? '...' : stats.totalCars}
               </div>
-              <p className="text-xs text-muted-foreground">
+              <p className="text-xs text-muted-foreground mb-4">
                 Total de carros cadastrados
               </p>
               <Button
-                className="w-full mt-4"
+                className="w-full bg-purple-500 hover:bg-purple-600 text-white border-0 shadow-soft"
                 size="sm"
                 onClick={() => handleNavigate('cars')}
               >
@@ -204,52 +227,73 @@ export function DashboardPage() {
           </Card>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Calendar className="h-5 w-5" />
+        <div
+          className="grid grid-cols-1 lg:grid-cols-2 gap-6 animate-slide-up"
+          style={{ animationDelay: '0.2s' }}
+        >
+          <Card className="border-border/50 bg-card/50 backdrop-blur-sm shadow-soft">
+            <CardHeader className="pb-4">
+              <CardTitle className="flex items-center gap-3 text-card-foreground">
+                <div className="p-2 rounded-lg bg-orange-500/10">
+                  <Calendar className="h-5 w-5 text-orange-600 dark:text-orange-400" />
+                </div>
                 Atividade Recente
               </CardTitle>
-              <CardDescription>
+              <CardDescription className="text-muted-foreground">
                 Últimos carros cadastrados no sistema
               </CardDescription>
             </CardHeader>
             <CardContent>
               {loading ? (
-                <div className="text-center py-8 text-muted-foreground">
-                  Carregando...
+                <div className="text-center py-8">
+                  <div className="animate-pulse space-y-4">
+                    <div className="h-4 bg-muted rounded w-3/4"></div>
+                    <div className="h-4 bg-muted rounded w-1/2"></div>
+                    <div className="h-4 bg-muted rounded w-2/3"></div>
+                  </div>
                 </div>
               ) : stats.recentCars.length === 0 ? (
                 <div className="text-center py-8 text-muted-foreground">
-                  <Car className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                  <p>Nenhuma atividade recente</p>
-                  <p className="text-sm">Comece cadastrando uma marca</p>
+                  <div className="p-4 rounded-full bg-muted/50 w-fit mx-auto mb-4">
+                    <Car className="h-8 w-8 opacity-50" />
+                  </div>
+                  <p className="font-medium">Nenhuma atividade recente</p>
+                  <p className="text-sm mt-1">Comece cadastrando uma marca</p>
                 </div>
               ) : (
-                <div className="space-y-4">
-                  {stats.recentCars.map((car) => (
+                <div className="space-y-3">
+                  {stats.recentCars.map((car, index) => (
                     <div
                       key={car.id}
-                      className="flex items-center justify-between p-3 rounded-lg bg-muted/50"
+                      className="group p-4 rounded-xl bg-muted/30 hover:bg-muted/50 transition-all duration-200 border border-border/30 hover:border-primary/30"
+                      style={{ animationDelay: `${index * 0.1}s` }}
                     >
-                      <div className="flex-1">
-                        <div className="flex items-center gap-2 mb-1">
-                          <span className="font-medium text-sm">
-                            {car.brand_name} {car.model_name}
-                          </span>
-                          <Badge
-                            variant="outline"
-                            className={getFuelBadgeColor(car.fuel)}
-                          >
-                            {car.fuel}
-                          </Badge>
+                      <div className="flex items-start justify-between">
+                        <div className="flex-1">
+                          <div className="flex items-center gap-2 mb-2">
+                            <span className="font-semibold text-foreground text-sm">
+                              {car.brand_name} {car.model_name}
+                            </span>
+                            <Badge
+                              variant="outline"
+                              className={`${getFuelBadgeColor(car.fuel)} text-xs font-medium border`}
+                            >
+                              {car.fuel}
+                            </Badge>
+                          </div>
+                          <div className="text-xs text-muted-foreground space-y-1">
+                            <div className="flex items-center gap-4">
+                              <span>{car.year}</span>
+                              <span>{car.color}</span>
+                              <span>{car.numberOfPorts} portas</span>
+                            </div>
+                            <div className="text-xs opacity-75">
+                              Cadastrado em {formatDate(car.createdAt)}
+                            </div>
+                          </div>
                         </div>
-                        <div className="text-xs text-muted-foreground">
-                          {car.year} • {car.color} • {car.numberOfPorts} portas
-                        </div>
-                        <div className="text-xs text-muted-foreground mt-1">
-                          Cadastrado em {formatDate(car.createdAt)}
+                        <div className="p-2 rounded-lg bg-primary/10 group-hover:bg-primary/20 transition-colors">
+                          <Car className="h-4 w-4 text-primary" />
                         </div>
                       </div>
                     </div>
@@ -257,7 +301,7 @@ export function DashboardPage() {
                   {stats.recentCars.length > 0 && (
                     <Button
                       variant="outline"
-                      className="w-full mt-4 bg-transparent"
+                      className="w-full mt-4 border-border/50 hover:border-primary/50 bg-transparent hover:bg-primary/5"
                       onClick={() => handleNavigate('cars')}
                     >
                       Ver todos os carros
@@ -268,69 +312,92 @@ export function DashboardPage() {
             </CardContent>
           </Card>
 
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <TrendingUp className="h-5 w-5" />
+          <Card className="border-border/50 bg-card/50 backdrop-blur-sm shadow-soft">
+            <CardHeader className="pb-4">
+              <CardTitle className="flex items-center gap-3 text-card-foreground">
+                <div className="p-2 rounded-lg bg-emerald-500/10">
+                  <TrendingUp className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />
+                </div>
                 Estatísticas Rápidas
               </CardTitle>
-              <CardDescription>Insights sobre seu inventário</CardDescription>
+              <CardDescription className="text-muted-foreground">
+                Insights sobre seu inventário
+              </CardDescription>
             </CardHeader>
             <CardContent>
               {loading ? (
-                <div className="text-center py-8 text-muted-foreground">
-                  Carregando...
+                <div className="text-center py-8">
+                  <div className="animate-pulse space-y-4">
+                    <div className="h-4 bg-muted rounded w-3/4"></div>
+                    <div className="h-4 bg-muted rounded w-1/2"></div>
+                    <div className="h-4 bg-muted rounded w-2/3"></div>
+                  </div>
                 </div>
               ) : stats.totalCars === 0 ? (
                 <div className="text-center py-8 text-muted-foreground">
-                  <TrendingUp className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                  <p>Sem dados para exibir</p>
-                  <p className="text-sm">
+                  <div className="p-4 rounded-full bg-muted/50 w-fit mx-auto mb-4">
+                    <TrendingUp className="h-8 w-8 opacity-50" />
+                  </div>
+                  <p className="font-medium">Sem dados para exibir</p>
+                  <p className="text-sm mt-1">
                     Cadastre alguns carros para ver estatísticas
                   </p>
                 </div>
               ) : (
-                <div className="space-y-4">
-                  <div className="flex justify-between items-center p-3 rounded-lg bg-muted/50">
-                    <span className="text-sm font-medium">
-                      Média de modelos por marca
-                    </span>
-                    <span className="text-lg font-bold text-primary">
-                      {stats.totalBrands > 0
-                        ? Math.round(
-                            (stats.totalModels / stats.totalBrands) * 10
-                          ) / 10
-                        : 0}
-                    </span>
+                <div className="space-y-3">
+                  <div className="group p-4 rounded-xl bg-gradient-to-r from-blue-500/5 to-blue-600/5 border border-blue-500/20 hover:from-blue-500/10 hover:to-blue-600/10 transition-all duration-200">
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm font-medium text-foreground">
+                        Média de modelos por marca
+                      </span>
+                      <span className="text-2xl font-bold text-blue-600 dark:text-blue-400">
+                        {stats.totalBrands > 0
+                          ? Math.round(
+                              (stats.totalModels / stats.totalBrands) * 10
+                            ) / 10
+                          : 0}
+                      </span>
+                    </div>
                   </div>
-                  <div className="flex justify-between items-center p-3 rounded-lg bg-muted/50">
-                    <span className="text-sm font-medium">
-                      Média de carros por modelo
-                    </span>
-                    <span className="text-lg font-bold text-primary">
-                      {stats.totalModels > 0
-                        ? Math.round(
-                            (stats.totalCars / stats.totalModels) * 10
-                          ) / 10
-                        : 0}
-                    </span>
+
+                  <div className="group p-4 rounded-xl bg-gradient-to-r from-green-500/5 to-green-600/5 border border-green-500/20 hover:from-green-500/10 hover:to-green-600/10 transition-all duration-200">
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm font-medium text-foreground">
+                        Média de carros por modelo
+                      </span>
+                      <span className="text-2xl font-bold text-green-600 dark:text-green-400">
+                        {stats.totalModels > 0
+                          ? Math.round(
+                              (stats.totalCars / stats.totalModels) * 10
+                            ) / 10
+                          : 0}
+                      </span>
+                    </div>
                   </div>
-                  <div className="flex justify-between items-center p-3 rounded-lg bg-muted/50">
-                    <span className="text-sm font-medium">
-                      Total de registros
-                    </span>
-                    <span className="text-lg font-bold text-primary">
-                      {stats.totalBrands + stats.totalModels + stats.totalCars}
-                    </span>
+
+                  <div className="group p-4 rounded-xl bg-gradient-to-r from-purple-500/5 to-purple-600/5 border border-purple-500/20 hover:from-purple-500/10 hover:to-purple-600/10 transition-all duration-200">
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm font-medium text-foreground">
+                        Total de registros
+                      </span>
+                      <span className="text-2xl font-bold text-purple-600 dark:text-purple-400">
+                        {stats.totalBrands +
+                          stats.totalModels +
+                          stats.totalCars}
+                      </span>
+                    </div>
                   </div>
+
                   {stats.recentCars.length > 0 && (
-                    <div className="flex justify-between items-center p-3 rounded-lg bg-muted/50">
-                      <span className="text-sm font-medium">
-                        Último cadastro
-                      </span>
-                      <span className="text-sm font-medium text-primary">
-                        {formatDate(stats.recentCars[0].createdAt)}
-                      </span>
+                    <div className="group p-4 rounded-xl bg-gradient-to-r from-orange-500/5 to-orange-600/5 border border-orange-500/20 hover:from-orange-500/10 hover:to-orange-600/10 transition-all duration-200">
+                      <div className="flex justify-between items-center">
+                        <span className="text-sm font-medium text-foreground">
+                          Último cadastro
+                        </span>
+                        <span className="text-sm font-semibold text-orange-600 dark:text-orange-400">
+                          {formatDate(stats.recentCars[0].createdAt)}
+                        </span>
+                      </div>
                     </div>
                   )}
                 </div>

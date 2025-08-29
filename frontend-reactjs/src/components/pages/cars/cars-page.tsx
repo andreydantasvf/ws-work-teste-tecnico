@@ -220,24 +220,38 @@ export function CarsPage() {
   const currentYear = new Date().getFullYear();
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-gradient-to-br from-background to-muted/20">
       {/* Header */}
-      <header className="border-b border-border bg-card">
+      <header className="sticky top-0 z-40 border-b border-border/40 bg-background/80 backdrop-blur-xl">
         <div className="container mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <button
+            <div className="flex items-center gap-4">
+              <Button
+                variant="ghost"
                 onClick={handleNavigateBack}
-                className="text-muted-foreground hover:text-foreground"
+                className="text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors"
               >
                 ← Voltar
-              </button>
-              <Car className="h-6 w-6 text-primary" />
-              <h1 className="text-xl font-bold text-foreground">
-                Gerenciar Carros
-              </h1>
+              </Button>
+              <div className="flex items-center gap-3">
+                <div className="p-2 rounded-xl bg-purple-500/10 border border-purple-500/20">
+                  <Car className="h-6 w-6 text-purple-600 dark:text-purple-400" />
+                </div>
+                <div>
+                  <h1 className="text-2xl font-bold bg-gradient-to-r from-foreground to-primary bg-clip-text text-transparent">
+                    Gerenciar Carros
+                  </h1>
+                  <p className="text-sm text-muted-foreground">
+                    Cadastre e gerencie os carros do sistema
+                  </p>
+                </div>
+              </div>
             </div>
-            <Button onClick={openCreateDialog} disabled={models.length === 0}>
+            <Button
+              onClick={openCreateDialog}
+              disabled={models.length === 0}
+              className="bg-purple-500 hover:bg-purple-600 text-white border-0 shadow-soft disabled:opacity-50"
+            >
               <Plus className="h-4 w-4 mr-2" />
               Novo Carro
             </Button>
@@ -248,38 +262,60 @@ export function CarsPage() {
       {/* Main Content */}
       <main className="container mx-auto px-6 py-8">
         {models.length === 0 ? (
-          <Card>
-            <CardContent className="text-center py-8">
-              <Car className="h-12 w-12 mx-auto mb-4 opacity-50 text-muted-foreground" />
-              <h3 className="text-lg font-semibold mb-2">
+          <Card className="border-border/50 bg-card/50 backdrop-blur-sm shadow-soft animate-fade-in">
+            <CardContent className="text-center py-12">
+              <div className="p-4 rounded-full bg-purple-500/10 w-fit mx-auto mb-6">
+                <Car className="h-12 w-12 text-purple-600 dark:text-purple-400" />
+              </div>
+              <h3 className="text-xl font-semibold mb-3 text-foreground">
                 Nenhum modelo cadastrado
               </h3>
-              <p className="text-muted-foreground mb-4">
+              <p className="text-muted-foreground mb-6 max-w-md mx-auto">
                 Você precisa cadastrar pelo menos um modelo antes de criar
-                carros
+                carros. Os modelos são necessários para definir as
+                especificações dos veículos.
               </p>
-              <Button onClick={handleNavigateToModels}>
+              <Button
+                onClick={handleNavigateToModels}
+                className="bg-purple-500 hover:bg-purple-600 text-white border-0 shadow-soft"
+              >
                 <Plus className="h-4 w-4 mr-2" />
                 Cadastrar Modelo
               </Button>
             </CardContent>
           </Card>
         ) : (
-          <Card>
-            <CardHeader>
-              <CardTitle>Carros Cadastrados</CardTitle>
-              <CardDescription>
-                Gerencie todos os carros do sistema
+          <Card className="border-border/50 bg-card/50 backdrop-blur-sm shadow-soft animate-fade-in">
+            <CardHeader className="pb-4">
+              <CardTitle className="text-card-foreground">
+                Carros Cadastrados
+              </CardTitle>
+              <CardDescription className="text-muted-foreground">
+                Lista de todos os carros disponíveis no sistema
               </CardDescription>
             </CardHeader>
             <CardContent>
               {loading ? (
-                <div className="text-center py-8">Carregando...</div>
+                <div className="text-center py-8">
+                  <div className="animate-pulse space-y-4">
+                    <div className="h-4 bg-muted rounded w-3/4 mx-auto"></div>
+                    <div className="h-4 bg-muted rounded w-1/2 mx-auto"></div>
+                    <div className="h-4 bg-muted rounded w-2/3 mx-auto"></div>
+                  </div>
+                </div>
               ) : cars.length === 0 ? (
-                <div className="text-center py-8 text-muted-foreground">
-                  <Car className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                  <p>Nenhum carro cadastrado</p>
-                  <Button onClick={openCreateDialog} className="mt-4">
+                <div className="text-center py-12 text-muted-foreground">
+                  <div className="p-4 rounded-full bg-muted/50 w-fit mx-auto mb-6">
+                    <Car className="h-12 w-12 opacity-50" />
+                  </div>
+                  <p className="font-medium mb-2">Nenhum carro cadastrado</p>
+                  <p className="text-sm mb-6">
+                    Comece cadastrando seu primeiro carro
+                  </p>
+                  <Button
+                    onClick={openCreateDialog}
+                    className="bg-purple-500 hover:bg-purple-600 text-white border-0 shadow-soft"
+                  >
                     <Plus className="h-4 w-4 mr-2" />
                     Cadastrar primeiro carro
                   </Button>
@@ -289,7 +325,7 @@ export function CarsPage() {
                   columns={columns}
                   data={cars}
                   searchKey="model_name"
-                  searchPlaceholder="Filtrar carros por modelo..."
+                  searchPlaceholder="Buscar carros por modelo..."
                 />
               )}
             </CardContent>

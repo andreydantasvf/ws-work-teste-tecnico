@@ -43,7 +43,7 @@ export function BrandsPage() {
   const [isDeleting, setIsDeleting] = useState(false);
 
   const queryClient = useQueryClient();
-  const { data: brands = [], isLoading: loading } = useBrands();
+  const { data: brands = [] } = useBrands();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -119,25 +119,37 @@ export function BrandsPage() {
   });
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-gradient-to-br from-background to-muted/20">
       {/* Header */}
-      <header className="border-b border-border bg-card">
+      <header className="sticky top-0 z-40 border-b border-border/40 bg-background/80 backdrop-blur-xl">
         <div className="container mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-4">
               <Button
                 variant="ghost"
                 onClick={handleNavigateBack}
-                className="text-muted-foreground hover:text-foreground"
+                className="text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors"
               >
                 ← Voltar
               </Button>
-              <Building2 className="h-6 w-6 text-primary" />
-              <h1 className="text-xl font-bold text-foreground">
-                Gerenciar Marcas
-              </h1>
+              <div className="flex items-center gap-3">
+                <div className="p-2 rounded-xl bg-blue-500/10 border border-blue-500/20">
+                  <Building2 className="h-6 w-6 text-blue-600 dark:text-blue-400" />
+                </div>
+                <div>
+                  <h1 className="text-2xl font-bold bg-gradient-to-r from-foreground to-primary bg-clip-text text-transparent">
+                    Gerenciar Marcas
+                  </h1>
+                  <p className="text-sm text-muted-foreground">
+                    Cadastre e gerencie as marcas de veículos
+                  </p>
+                </div>
+              </div>
             </div>
-            <Button onClick={openCreateDialog}>
+            <Button
+              onClick={openCreateDialog}
+              className="bg-blue-500 hover:bg-blue-600 text-white border-0 shadow-soft"
+            >
               <Plus className="h-4 w-4 mr-2" />
               Nova Marca
             </Button>
@@ -147,71 +159,71 @@ export function BrandsPage() {
 
       {/* Main Content */}
       <main className="container mx-auto px-6 py-8">
-        <Card>
-          <CardHeader>
-            <CardTitle>Marcas Cadastradas</CardTitle>
-            <CardDescription>
-              Gerencie todas as marcas de veículos do sistema
+        <Card className="border-border/50 bg-card/50 backdrop-blur-sm shadow-soft animate-fade-in">
+          <CardHeader className="pb-4">
+            <CardTitle className="text-card-foreground">
+              Marcas Cadastradas
+            </CardTitle>
+            <CardDescription className="text-muted-foreground">
+              Lista de todas as marcas disponíveis no sistema
             </CardDescription>
           </CardHeader>
           <CardContent>
-            {loading ? (
-              <div className="text-center py-8">Carregando...</div>
-            ) : brands.length === 0 ? (
-              <div className="text-center py-8 text-muted-foreground">
-                <Building2 className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                <p>Nenhuma marca cadastrada</p>
-                <Button onClick={openCreateDialog} className="mt-4">
-                  <Plus className="h-4 w-4 mr-2" />
-                  Cadastrar primeira marca
-                </Button>
-              </div>
-            ) : (
-              <DataTable
-                columns={columns}
-                data={brands}
-                searchKey="name"
-                searchPlaceholder="Filtrar por nome da marca..."
-              />
-            )}
+            <DataTable
+              columns={columns}
+              data={brands}
+              searchKey="name"
+              searchPlaceholder="Buscar por nome da marca..."
+            />
           </CardContent>
         </Card>
 
         {/* Create/Edit Dialog */}
         <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-          <DialogContent>
+          <DialogContent className="border-border/50 bg-card/95 backdrop-blur-xl">
             <DialogHeader>
-              <DialogTitle>
+              <DialogTitle className="text-xl font-semibold text-card-foreground">
                 {editingBrand ? 'Editar Marca' : 'Nova Marca'}
               </DialogTitle>
-              <DialogDescription>
+              <DialogDescription className="text-muted-foreground">
                 {editingBrand
                   ? 'Atualize as informações da marca'
                   : 'Preencha os dados da nova marca'}
               </DialogDescription>
             </DialogHeader>
             <form onSubmit={handleSubmit}>
-              <div className="grid gap-4 py-4">
-                <div className="grid gap-2">
-                  <Label htmlFor="name">Nome da Marca</Label>
+              <div className="grid gap-6 py-4">
+                <div className="grid gap-3">
+                  <Label
+                    htmlFor="name"
+                    className="text-sm font-medium text-foreground"
+                  >
+                    Nome da Marca
+                  </Label>
                   <Input
                     id="name"
                     value={formData.name}
                     onChange={(e) => setFormData({ name: e.target.value })}
                     placeholder="Ex: Toyota, Honda, Ford..."
+                    className="border-border/50 focus:border-primary bg-background/50"
                     required
                   />
                 </div>
               </div>
-              <DialogFooter>
+              <DialogFooter className="gap-3">
                 <Button
                   type="button"
                   variant="outline"
                   onClick={() => setDialogOpen(false)}
+                  className="border-border/50 hover:border-primary/50 bg-transparent"
                 >
                   Cancelar
                 </Button>
-                <Button type="submit" disabled={isSubmitting}>
+                <Button
+                  type="submit"
+                  disabled={isSubmitting}
+                  className="bg-blue-500 hover:bg-blue-600 text-white border-0 shadow-soft"
+                >
                   {isSubmitting
                     ? 'Salvando...'
                     : editingBrand
