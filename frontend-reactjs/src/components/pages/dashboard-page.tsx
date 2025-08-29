@@ -165,7 +165,7 @@ export function DashboardPage() {
                 Total de marcas cadastradas
               </p>
               <Button
-                className="w-full bg-blue-500 hover:bg-blue-600 text-white border-0 shadow-soft"
+                className="w-full bg-blue-500 cursor-pointer hover:bg-blue-600 text-white border-0 shadow-soft"
                 size="sm"
                 onClick={() => handleNavigate('brands')}
               >
@@ -191,7 +191,7 @@ export function DashboardPage() {
                 Total de modelos cadastrados
               </p>
               <Button
-                className="w-full bg-green-500 hover:bg-green-600 text-white border-0 shadow-soft"
+                className="w-full bg-green-500 cursor-pointer hover:bg-green-600 text-white border-0 shadow-soft"
                 size="sm"
                 onClick={() => handleNavigate('models')}
               >
@@ -217,7 +217,7 @@ export function DashboardPage() {
                 Total de carros cadastrados
               </p>
               <Button
-                className="w-full bg-purple-500 hover:bg-purple-600 text-white border-0 shadow-soft"
+                className="w-full bg-purple-500 cursor-pointer hover:bg-purple-600 text-white border-0 shadow-soft"
                 size="sm"
                 onClick={() => handleNavigate('cars')}
               >
@@ -301,7 +301,7 @@ export function DashboardPage() {
                   {stats.recentCars.length > 0 && (
                     <Button
                       variant="outline"
-                      className="w-full mt-4 border-border/50 hover:border-primary/50 bg-transparent hover:bg-primary/5"
+                      className="w-full cursor-pointer mt-4 border-border/50 hover:border-primary/50 bg-transparent hover:bg-primary/5"
                       onClick={() => handleNavigate('cars')}
                     >
                       Ver todos os carros

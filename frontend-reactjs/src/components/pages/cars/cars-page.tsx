@@ -229,7 +229,7 @@ export function CarsPage() {
               <Button
                 variant="ghost"
                 onClick={handleNavigateBack}
-                className="text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors"
+                className="text-muted-foreground cursor-pointer hover:text-foreground hover:bg-muted/50 transition-colors"
               >
                 ← Voltar
               </Button>
@@ -334,21 +334,26 @@ export function CarsPage() {
 
         {/* Create/Edit Dialog */}
         <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-          <DialogContent className="max-w-md">
+          <DialogContent className="max-w-md border-border/50 bg-card/95 backdrop-blur-xl">
             <DialogHeader>
-              <DialogTitle>
+              <DialogTitle className="text-xl font-semibold text-card-foreground">
                 {editingCar ? 'Editar Carro' : 'Novo Carro'}
               </DialogTitle>
-              <DialogDescription>
+              <DialogDescription className="text-muted-foreground">
                 {editingCar
                   ? 'Atualize as informações do carro'
                   : 'Preencha os dados do novo carro'}
               </DialogDescription>
             </DialogHeader>
             <form onSubmit={handleSubmit}>
-              <div className="grid gap-4 py-4">
-                <div className="grid gap-2">
-                  <Label htmlFor="modelId">Modelo</Label>
+              <div className="grid gap-6 py-4">
+                <div className="grid gap-3">
+                  <Label
+                    htmlFor="modelId"
+                    className="text-sm font-medium text-foreground"
+                  >
+                    Modelo
+                  </Label>
                   <Select
                     value={formData.modelId}
                     onValueChange={(value) =>
@@ -356,10 +361,10 @@ export function CarsPage() {
                     }
                     required
                   >
-                    <SelectTrigger>
+                    <SelectTrigger className="border-border/50 focus:border-primary bg-background/50">
                       <SelectValue placeholder="Selecione um modelo" />
                     </SelectTrigger>
-                    <SelectContent>
+                    <SelectContent className="border-border/50 bg-card/95 backdrop-blur-xl">
                       {models.map((model) => (
                         <SelectItem key={model.id} value={model.id.toString()}>
                           {model.brand_name} - {model.name}
@@ -369,8 +374,13 @@ export function CarsPage() {
                   </Select>
                 </div>
                 <div className="grid grid-cols-2 gap-4">
-                  <div className="grid gap-2">
-                    <Label htmlFor="year">Ano</Label>
+                  <div className="grid gap-3">
+                    <Label
+                      htmlFor="year"
+                      className="text-sm font-medium text-foreground"
+                    >
+                      Ano
+                    </Label>
                     <Input
                       id="year"
                       type="number"
@@ -381,11 +391,17 @@ export function CarsPage() {
                         setFormData({ ...formData, year: e.target.value })
                       }
                       placeholder="2024"
+                      className="border-border/50 focus:border-primary bg-background/50"
                       required
                     />
                   </div>
-                  <div className="grid gap-2">
-                    <Label htmlFor="numberOfPorts">Portas</Label>
+                  <div className="grid gap-3">
+                    <Label
+                      htmlFor="numberOfPorts"
+                      className="text-sm font-medium text-foreground"
+                    >
+                      Portas
+                    </Label>
                     <Select
                       value={formData.numberOfPorts}
                       onValueChange={(value) =>
@@ -393,10 +409,10 @@ export function CarsPage() {
                       }
                       required
                     >
-                      <SelectTrigger>
+                      <SelectTrigger className="border-border/50 focus:border-primary bg-background/50">
                         <SelectValue placeholder="Portas" />
                       </SelectTrigger>
-                      <SelectContent>
+                      <SelectContent className="border-border/50 bg-card/95 backdrop-blur-xl">
                         {DOOR_OPTIONS.map((option) => (
                           <SelectItem key={option.value} value={option.value}>
                             {option.label}
@@ -406,8 +422,13 @@ export function CarsPage() {
                     </Select>
                   </div>
                 </div>
-                <div className="grid gap-2">
-                  <Label htmlFor="fuel">Combustível</Label>
+                <div className="grid gap-3">
+                  <Label
+                    htmlFor="fuel"
+                    className="text-sm font-medium text-foreground"
+                  >
+                    Combustível
+                  </Label>
                   <Select
                     value={formData.fuel}
                     onValueChange={(value) =>
@@ -415,10 +436,10 @@ export function CarsPage() {
                     }
                     required
                   >
-                    <SelectTrigger>
+                    <SelectTrigger className="border-border/50 focus:border-primary bg-background/50">
                       <SelectValue placeholder="Selecione o combustível" />
                     </SelectTrigger>
-                    <SelectContent>
+                    <SelectContent className="border-border/50 bg-card/95 backdrop-blur-xl">
                       {FUEL_TYPES.map((fuel) => (
                         <SelectItem key={fuel.value} value={fuel.value}>
                           {fuel.label}
@@ -427,8 +448,13 @@ export function CarsPage() {
                     </SelectContent>
                   </Select>
                 </div>
-                <div className="grid gap-2">
-                  <Label htmlFor="color">Cor</Label>
+                <div className="grid gap-3">
+                  <Label
+                    htmlFor="color"
+                    className="text-sm font-medium text-foreground"
+                  >
+                    Cor
+                  </Label>
                   <Input
                     id="color"
                     value={formData.color}
@@ -436,19 +462,25 @@ export function CarsPage() {
                       setFormData({ ...formData, color: e.target.value })
                     }
                     placeholder="Ex: Branco, Preto, Prata..."
+                    className="border-border/50 focus:border-primary bg-background/50"
                     required
                   />
                 </div>
               </div>
-              <DialogFooter>
+              <DialogFooter className="gap-3">
                 <Button
                   type="button"
                   variant="outline"
                   onClick={() => setDialogOpen(false)}
+                  className="border-border/50 hover:border-primary/50 bg-transparent"
                 >
                   Cancelar
                 </Button>
-                <Button type="submit" disabled={isSubmitting}>
+                <Button
+                  type="submit"
+                  disabled={isSubmitting}
+                  className="bg-purple-500 hover:bg-purple-600 text-white border-0 shadow-soft"
+                >
                   {isSubmitting
                     ? 'Salvando...'
                     : editingCar

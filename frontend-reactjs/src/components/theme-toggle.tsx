@@ -21,7 +21,7 @@ export function ThemeToggle() {
       variant="ghost"
       size="sm"
       onClick={toggleTheme}
-      className="relative h-9 w-9 p-0 hover:bg-muted border border-border/50 hover:border-primary/30 transition-all duration-300"
+      className="relative cursor-pointer h-9 w-9 p-0 hover:bg-muted border border-border/50 hover:border-primary/30 transition-all duration-300"
       aria-label={`Alterar para tema ${isDark ? 'claro' : 'escuro'}`}
     >
       <div className="relative flex items-center justify-center">

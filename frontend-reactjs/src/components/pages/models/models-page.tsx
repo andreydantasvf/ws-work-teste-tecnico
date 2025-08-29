@@ -162,23 +162,38 @@ export function ModelsPage() {
   };
 
   return (
-    <div className="min-h-screen bg-background">
-      <header className="border-b border-border bg-card">
+    <div className="min-h-screen bg-gradient-to-br from-background to-muted/20">
+      {/* Header */}
+      <header className="sticky top-0 z-40 border-b border-border/40 bg-background/80 backdrop-blur-xl">
         <div className="container mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <button
+            <div className="flex items-center gap-4">
+              <Button
+                variant="ghost"
                 onClick={handleNavigateBack}
-                className="text-muted-foreground hover:text-foreground"
+                className="text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors"
               >
                 ← Voltar
-              </button>
-              <Wrench className="h-6 w-6 text-primary" />
-              <h1 className="text-xl font-bold text-foreground">
-                Gerenciar Modelos
-              </h1>
+              </Button>
+              <div className="flex items-center gap-3">
+                <div className="p-2 rounded-xl bg-green-500/10 border border-green-500/20">
+                  <Wrench className="h-6 w-6 text-green-600 dark:text-green-400" />
+                </div>
+                <div>
+                  <h1 className="text-2xl font-bold bg-gradient-to-r from-foreground to-primary bg-clip-text text-transparent">
+                    Gerenciar Modelos
+                  </h1>
+                  <p className="text-sm text-muted-foreground">
+                    Cadastre e gerencie os modelos de veículos
+                  </p>
+                </div>
+              </div>
             </div>
-            <Button onClick={openCreateDialog} disabled={brands.length === 0}>
+            <Button
+              onClick={openCreateDialog}
+              disabled={brands.length === 0}
+              className="bg-green-500 hover:bg-green-600 text-white border-0 shadow-soft disabled:opacity-50"
+            >
               <Plus className="h-4 w-4 mr-2" />
               Novo Modelo
             </Button>
@@ -186,40 +201,63 @@ export function ModelsPage() {
         </div>
       </header>
 
+      {/* Main Content */}
       <main className="container mx-auto px-6 py-8">
         {brands.length === 0 ? (
-          <Card>
-            <CardContent className="text-center py-8">
-              <Wrench className="h-12 w-12 mx-auto mb-4 opacity-50 text-muted-foreground" />
-              <h3 className="text-lg font-semibold mb-2">
+          <Card className="border-border/50 bg-card/50 backdrop-blur-sm shadow-soft animate-fade-in">
+            <CardContent className="text-center py-12">
+              <div className="p-4 rounded-full bg-green-500/10 w-fit mx-auto mb-6">
+                <Wrench className="h-12 w-12 text-green-600 dark:text-green-400" />
+              </div>
+              <h3 className="text-xl font-semibold mb-3 text-foreground">
                 Nenhuma marca cadastrada
               </h3>
-              <p className="text-muted-foreground mb-4">
+              <p className="text-muted-foreground mb-6 max-w-md mx-auto">
                 Você precisa cadastrar pelo menos uma marca antes de criar
-                modelos
+                modelos. As marcas são necessárias para organizar os modelos de
+                veículos.
               </p>
-              <Button onClick={handleNavigateToBrands}>
+              <Button
+                onClick={handleNavigateToBrands}
+                className="bg-green-500 hover:bg-green-600 text-white border-0 shadow-soft"
+              >
                 <Plus className="h-4 w-4 mr-2" />
                 Cadastrar Marca
               </Button>
             </CardContent>
           </Card>
         ) : (
-          <Card>
-            <CardHeader>
-              <CardTitle>Modelos Cadastrados</CardTitle>
-              <CardDescription>
-                Gerencie todos os modelos de veículos do sistema
+          <Card className="border-border/50 bg-card/50 backdrop-blur-sm shadow-soft animate-fade-in">
+            <CardHeader className="pb-4">
+              <CardTitle className="text-card-foreground">
+                Modelos Cadastrados
+              </CardTitle>
+              <CardDescription className="text-muted-foreground">
+                Lista de todos os modelos de veículos do sistema
               </CardDescription>
             </CardHeader>
             <CardContent>
               {loading ? (
-                <div className="text-center py-8">Carregando...</div>
+                <div className="text-center py-8">
+                  <div className="animate-pulse space-y-4">
+                    <div className="h-4 bg-muted rounded w-3/4 mx-auto"></div>
+                    <div className="h-4 bg-muted rounded w-1/2 mx-auto"></div>
+                    <div className="h-4 bg-muted rounded w-2/3 mx-auto"></div>
+                  </div>
+                </div>
               ) : models.length === 0 ? (
-                <div className="text-center py-8 text-muted-foreground">
-                  <Wrench className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                  <p>Nenhum modelo cadastrado</p>
-                  <Button onClick={openCreateDialog} className="mt-4">
+                <div className="text-center py-12 text-muted-foreground">
+                  <div className="p-4 rounded-full bg-muted/50 w-fit mx-auto mb-6">
+                    <Wrench className="h-12 w-12 opacity-50" />
+                  </div>
+                  <p className="font-medium mb-2">Nenhum modelo cadastrado</p>
+                  <p className="text-sm mb-6">
+                    Comece cadastrando seu primeiro modelo
+                  </p>
+                  <Button
+                    onClick={openCreateDialog}
+                    className="bg-green-500 hover:bg-green-600 text-white border-0 shadow-soft"
+                  >
                     <Plus className="h-4 w-4 mr-2" />
                     Cadastrar primeiro modelo
                   </Button>
@@ -229,29 +267,35 @@ export function ModelsPage() {
                   columns={columns}
                   data={models}
                   searchKey="name"
-                  searchPlaceholder="Filtrar modelos..."
+                  searchPlaceholder="Buscar modelos..."
                 />
               )}
             </CardContent>
           </Card>
         )}
 
+        {/* Create/Edit Dialog */}
         <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-          <DialogContent>
+          <DialogContent className="border-border/50 bg-card/95 backdrop-blur-xl">
             <DialogHeader>
-              <DialogTitle>
+              <DialogTitle className="text-xl font-semibold text-card-foreground">
                 {editingModel ? 'Editar Modelo' : 'Novo Modelo'}
               </DialogTitle>
-              <DialogDescription>
+              <DialogDescription className="text-muted-foreground">
                 {editingModel
                   ? 'Atualize as informações do modelo'
                   : 'Preencha os dados do novo modelo'}
               </DialogDescription>
             </DialogHeader>
             <form onSubmit={handleSubmit}>
-              <div className="grid gap-4 py-4">
-                <div className="grid gap-2">
-                  <Label htmlFor="name">Nome do Modelo</Label>
+              <div className="grid gap-6 py-4">
+                <div className="grid gap-3">
+                  <Label
+                    htmlFor="name"
+                    className="text-sm font-medium text-foreground"
+                  >
+                    Nome do Modelo
+                  </Label>
                   <Input
                     id="name"
                     value={formData.name}
@@ -259,11 +303,17 @@ export function ModelsPage() {
                       setFormData({ ...formData, name: e.target.value })
                     }
                     placeholder="Ex: Civic, Corolla, Focus..."
+                    className="border-border/50 focus:border-primary bg-background/50"
                     required
                   />
                 </div>
-                <div className="grid gap-2">
-                  <Label htmlFor="brandId">Marca</Label>
+                <div className="grid gap-3">
+                  <Label
+                    htmlFor="brandId"
+                    className="text-sm font-medium text-foreground"
+                  >
+                    Marca
+                  </Label>
                   <Select
                     value={formData.brandId}
                     onValueChange={(value) =>
@@ -271,10 +321,10 @@ export function ModelsPage() {
                     }
                     required
                   >
-                    <SelectTrigger>
+                    <SelectTrigger className="border-border/50 focus:border-primary bg-background/50">
                       <SelectValue placeholder="Selecione uma marca" />
                     </SelectTrigger>
-                    <SelectContent>
+                    <SelectContent className="border-border/50 bg-card/95 backdrop-blur-xl">
                       {brands.map((brand) => (
                         <SelectItem key={brand.id} value={brand.id.toString()}>
                           {brand.name}
@@ -283,8 +333,13 @@ export function ModelsPage() {
                     </SelectContent>
                   </Select>
                 </div>
-                <div className="grid gap-2">
-                  <Label htmlFor="fipeValue">Valor FIPE (R$)</Label>
+                <div className="grid gap-3">
+                  <Label
+                    htmlFor="fipeValue"
+                    className="text-sm font-medium text-foreground"
+                  >
+                    Valor FIPE (R$)
+                  </Label>
                   <Input
                     id="fipeValue"
                     type="number"
@@ -295,19 +350,25 @@ export function ModelsPage() {
                       setFormData({ ...formData, fipeValue: e.target.value })
                     }
                     placeholder="Ex: 45000.00"
+                    className="border-border/50 focus:border-primary bg-background/50"
                     required
                   />
                 </div>
               </div>
-              <DialogFooter>
+              <DialogFooter className="gap-3">
                 <Button
                   type="button"
                   variant="outline"
                   onClick={() => setDialogOpen(false)}
+                  className="border-border/50 hover:border-primary/50 bg-transparent"
                 >
                   Cancelar
                 </Button>
-                <Button type="submit" disabled={isSubmitting}>
+                <Button
+                  type="submit"
+                  disabled={isSubmitting}
+                  className="bg-green-500 hover:bg-green-600 text-white border-0 shadow-soft"
+                >
                   {isSubmitting
                     ? 'Salvando...'
                     : editingModel

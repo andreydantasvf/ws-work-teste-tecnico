@@ -23,9 +23,7 @@ export function createBrandsColumns({
         <DataTableColumnHeader column={column} title="Nome da Marca" />
       ),
       cell: ({ row }) => (
-        <div className="font-semibold text-foreground">
-          {row.getValue('name')}
-        </div>
+        <div className="font-medium">{row.getValue('name')}</div>
       ),
       enableSorting: true,
       enableHiding: false
@@ -47,26 +45,27 @@ export function createBrandsColumns({
     },
     {
       id: 'actions',
-      header: () => <div className="text-right">Ações</div>,
+      header: 'Ações',
+      size: 80,
       cell: ({ row }) => {
         const brand = row.original;
 
         return (
-          <div className="flex justify-end gap-2">
+          <div className="flex items-center gap-1">
             <Button
-              variant="outline"
+              variant="ghost"
               size="sm"
               onClick={() => onEdit(brand)}
-              className="h-8 w-8 p-0"
+              className="h-8 w-8 p-0 hover:bg-muted"
             >
               <Edit className="h-4 w-4" />
               <span className="sr-only">Editar marca</span>
             </Button>
             <Button
-              variant="outline"
+              variant="ghost"
               size="sm"
               onClick={() => onDelete(brand)}
-              className="h-8 w-8 p-0"
+              className="h-8 w-8 p-0 hover:bg-muted hover:text-destructive"
             >
               <Trash2 className="h-4 w-4" />
               <span className="sr-only">Excluir marca</span>
@@ -75,8 +74,7 @@ export function createBrandsColumns({
         );
       },
       enableSorting: false,
-      enableHiding: false,
-      size: 100 // Define um tamanho menor para a coluna de ações
+      enableHiding: false
     }
   ];
 }
