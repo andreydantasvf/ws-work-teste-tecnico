@@ -1,149 +1,89 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 
-/* Custom Sonner Toast Styles */
-[data-sonner-toaster] {
-  font-family: inherit;
-  margin: 16px !important;
+:root {
+  --background: oklch(1 0 0);
+  --foreground: oklch(0.25 0 0);
+  --card: oklch(0.98 0.01 195);
+  --card-foreground: oklch(0.35 0 0);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.25 0 0);
+  --primary: oklch(0.35 0.08 195);
+  --primary-foreground: oklch(1 0 0);
+  --secondary: oklch(0.75 0.15 85);
+  --secondary-foreground: oklch(1 0 0);
+  --muted: oklch(0.97 0.01 195);
+  --muted-foreground: oklch(0.25 0 0);
+  --accent: oklch(0.75 0.15 85);
+  --accent-foreground: oklch(0.25 0 0);
+  --destructive: oklch(0.577 0.245 27.325);
+  --destructive-foreground: oklch(1 0 0);
+  --border: oklch(0.9 0.01 195);
+  --input: oklch(0.98 0.01 195);
+  --ring: oklch(0.35 0.08 195 / 0.2);
+  --chart-1: oklch(0.6 0.15 140);
+  --chart-2: oklch(0.8 0.2 85);
+  --chart-3: oklch(0.65 0.15 195);
+  --chart-4: oklch(0.7 0.2 25);
+  --chart-5: oklch(0.6 0.2 280);
+  --radius: 0.5rem;
+  --sidebar: oklch(0.98 0.01 195);
+  --sidebar-foreground: oklch(0.25 0 0);
+  --sidebar-primary: oklch(0.35 0.08 195);
+  --sidebar-primary-foreground: oklch(1 0 0);
+  --sidebar-accent: oklch(0.75 0.15 85);
+  --sidebar-accent-foreground: oklch(0.25 0 0);
+  --sidebar-border: oklch(0.9 0.01 195);
+  --sidebar-ring: oklch(0.35 0.08 195 / 0.2);
 }
 
-[data-sonner-toast] {
-  border-radius: 12px !important;
-  border-width: 2px !important;
-  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05) !important;
-  backdrop-filter: blur(8px);
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
-  margin-bottom: 8px !important;
+@theme inline {
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
 }
 
-[data-sonner-toast]:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 20px 35px -5px rgba(0, 0, 0, 0.15), 0 8px 10px -6px rgba(0, 0, 0, 0.1) !important;
-}
-
-/* Success Toast */
-[data-sonner-toast][data-type="success"] {
-  background: linear-gradient(135deg, rgba(34, 197, 94, 0.1) 0%, rgba(22, 163, 74, 0.05) 100%) !important;
-  border-color: rgb(34, 197, 94) !important;
-  color: rgb(22, 101, 52) !important;
-}
-
-[data-sonner-toast][data-type="success"] [data-icon] {
-  color: rgb(34, 197, 94) !important;
-}
-
-/* Error Toast */
-[data-sonner-toast][data-type="error"] {
-  background: linear-gradient(135deg, rgba(239, 68, 68, 0.1) 0%, rgba(220, 38, 38, 0.05) 100%) !important;
-  border-color: rgb(239, 68, 68) !important;
-  color: rgb(153, 27, 27) !important;
-}
-
-[data-sonner-toast][data-type="error"] [data-icon] {
-  color: rgb(239, 68, 68) !important;
-}
-
-/* Warning Toast */
-[data-sonner-toast][data-type="warning"] {
-  background: linear-gradient(135deg, rgba(245, 158, 11, 0.15) 0%, rgba(217, 119, 6, 0.08) 100%) !important;
-  border-color: rgb(245, 158, 11) !important;
-  color: rgb(146, 64, 14) !important;
-}
-
-[data-sonner-toast][data-type="warning"] [data-icon] {
-  color: rgb(245, 158, 11) !important;
-}
-
-/* Info Toast */
-[data-sonner-toast][data-type="info"] {
-  background: linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(37, 99, 235, 0.05) 100%) !important;
-  border-color: rgb(59, 130, 246) !important;
-  color: rgb(30, 58, 138) !important;
-}
-
-[data-sonner-toast][data-type="info"] [data-icon] {
-  color: rgb(59, 130, 246) !important;
-}
-
-/* Loading Toast */
-[data-sonner-toast][data-type="loading"] {
-  background: linear-gradient(135deg, rgba(245, 158, 11, 0.1) 0%, rgba(217, 119, 6, 0.05) 100%) !important;
-  border-color: rgb(245, 158, 11) !important;
-  color: rgb(146, 64, 14) !important;
-}
-
-[data-sonner-toast][data-type="loading"] [data-icon] {
-  color: rgb(245, 158, 11) !important;
-  animation: spin 1s linear infinite;
-}
-
-@keyframes spin {
-  from {
-    transform: rotate(0deg);
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
   }
 
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-/* Default Toast */
-[data-sonner-toast]:not([data-type]) {
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(249, 250, 251, 0.9) 100%) !important;
-  border-color: rgb(245, 158, 11) !important;
-  color: rgb(75, 85, 99) !important;
-}
-
-/* Toast Description */
-[data-sonner-toast] [data-description] {
-  opacity: 0.8;
-  font-size: 0.875rem;
-  margin-top: 2px;
-}
-
-/* Close Button */
-[data-sonner-toast] [data-close-button] {
-  background: rgba(245, 158, 11, 0.1) !important;
-  border: 1px solid rgba(245, 158, 11, 0.2) !important;
-  color: rgb(245, 158, 11) !important;
-  border-radius: 8px !important;
-  transition: all 0.2s ease !important;
-}
-
-[data-sonner-toast] [data-close-button]:hover {
-  background: rgba(245, 158, 11, 0.2) !important;
-  transform: scale(1.1);
-}
-
-/* Toast Animation */
-[data-sonner-toast][data-mounted="true"] {
-  animation: toast-enter 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-[data-sonner-toast][data-removed="true"] {
-  animation: toast-exit 0.2s cubic-bezier(0.4, 0, 1, 1);
-}
-
-@keyframes toast-enter {
-  from {
-    opacity: 0;
-    transform: translateX(100%) scale(0.95);
-  }
-
-  to {
-    opacity: 1;
-    transform: translateX(0%) scale(1);
-  }
-}
-
-@keyframes toast-exit {
-  from {
-    opacity: 1;
-    transform: translateX(0%) scale(1);
-  }
-
-  to {
-    opacity: 0;
-    transform: translateX(100%) scale(0.95);
+  body {
+    @apply bg-background text-foreground;
   }
 }
