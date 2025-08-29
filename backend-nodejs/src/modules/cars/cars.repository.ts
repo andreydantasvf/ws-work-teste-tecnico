@@ -13,7 +13,14 @@ export class CarsRepository implements ICarRepository {
   async save(car: ICar): Promise<ICar> {
     try {
       const createdCar = await this.db.cars.create({
-        data: car
+        data: car,
+        include: {
+          model: {
+            include: {
+              brand: true
+            }
+          }
+        }
       });
       return createdCar;
     } catch (error) {
@@ -60,7 +67,14 @@ export class CarsRepository implements ICarRepository {
     try {
       const updatedCar = await this.db.cars.update({
         where: { id },
-        data: car
+        data: car,
+        include: {
+          model: {
+            include: {
+              brand: true
+            }
+          }
+        }
       });
       return updatedCar;
     } catch (error) {

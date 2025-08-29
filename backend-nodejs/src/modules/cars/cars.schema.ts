@@ -128,6 +128,8 @@ export const carSchema = z.object({
   numberOfPorts: z.number().min(1).describe('Número de portas do carro'),
   fuel: z.string().min(2).max(30).describe('Tipo de combustível do carro'),
   modelId: z.number().min(1).describe('Identificador único do modelo'),
+  createdAt: z.date().optional().describe('Data de criação do carro'),
+  updatedAt: z.date().optional().describe('Data da última atualização'),
   model: z.object({
     name: z.string().min(2).max(100).describe('Nome do modelo do carro'),
     brand: z.object({
