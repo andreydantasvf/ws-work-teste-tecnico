@@ -9,6 +9,7 @@
     "build:app": "tsc -b && vite build",
     "build:storybook": "storybook build",
     "build:combined": "npm run build:app && npm run build:storybook && npm run copy-storybook",
+    "copy-storybook": "cp -r storybook-static dist/storybook",
     "lint": "eslint .",
     "preview": "vite preview",
     "storybook": "storybook dev -p 6006",
