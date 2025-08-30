@@ -6,6 +6,7 @@ export interface Car {
   fuel: string;
   numberOfPorts: number;
   color: string;
+  value: number;
   modelId: number;
   createdAt?: string;
   updatedAt?: string;
@@ -16,6 +17,7 @@ export interface CreateCarPayload {
   fuel: string;
   numberOfPorts: number;
   color: string;
+  value: number;
   modelId: number;
 }
 
@@ -24,6 +26,7 @@ export interface UpdateCarPayload {
   fuel: string;
   numberOfPorts: number;
   color: string;
+  value: number;
   modelId: number;
 }
 

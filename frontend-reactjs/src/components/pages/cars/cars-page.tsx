@@ -55,8 +55,7 @@ const FUEL_TYPES = [
 const DOOR_OPTIONS = [
   { value: '2', label: '2 portas' },
   { value: '3', label: '3 portas' },
-  { value: '4', label: '4 portas' },
-  { value: '5', label: '5 portas' }
+  { value: '4', label: '4 portas' }
 ];
 
 /**
@@ -78,7 +77,8 @@ export function CarsPage() {
     year: '',
     fuel: '',
     numberOfPorts: '',
-    color: ''
+    color: '',
+    value: ''
   });
 
   // Fetch data using React Query hooks
@@ -138,7 +138,8 @@ export function CarsPage() {
         year: Number.parseInt(formData.year),
         fuel: formData.fuel,
         numberOfPorts: Number.parseInt(formData.numberOfPorts),
-        color: formData.color
+        color: formData.color,
+        value: Number.parseFloat(formData.value)
       };
 
       if (editingCar) {
@@ -156,7 +157,8 @@ export function CarsPage() {
         year: '',
         fuel: '',
         numberOfPorts: '',
-        color: ''
+        color: '',
+        value: ''
       });
       refetchCars();
     } catch {
@@ -190,7 +192,8 @@ export function CarsPage() {
       year: car.year.toString(),
       fuel: car.fuel,
       numberOfPorts: car.numberOfPorts.toString(),
-      color: car.color
+      color: car.color,
+      value: car.value.toString()
     });
     setDialogOpen(true);
   };
@@ -202,7 +205,8 @@ export function CarsPage() {
       year: '',
       fuel: '',
       numberOfPorts: '',
-      color: ''
+      color: '',
+      value: ''
     });
     setDialogOpen(true);
   };
@@ -460,6 +464,27 @@ export function CarsPage() {
                       setFormData({ ...formData, color: e.target.value })
                     }
                     placeholder="Ex: Branco, Preto, Prata..."
+                    className="border-border/50 focus:border-primary bg-background/50"
+                    required
+                  />
+                </div>
+                <div className="grid gap-3">
+                  <Label
+                    htmlFor="value"
+                    className="text-sm font-medium text-foreground"
+                  >
+                    Valor (R$)
+                  </Label>
+                  <Input
+                    id="value"
+                    type="number"
+                    min="0"
+                    step="0.01"
+                    value={formData.value}
+                    onChange={(e) =>
+                      setFormData({ ...formData, value: e.target.value })
+                    }
+                    placeholder="Ex: 45000.50"
                     className="border-border/50 focus:border-primary bg-background/50"
                     required
                   />

@@ -109,6 +109,21 @@ export const createCarsColumns = (
     size: 80
   },
   {
+    accessorKey: 'value',
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Valor" />
+    ),
+    cell: ({ row }) => {
+      const value = row.getValue('value') as number;
+      const formatted = new Intl.NumberFormat('pt-BR', {
+        style: 'currency',
+        currency: 'BRL'
+      }).format(value);
+      return <div className="font-medium text-green-600">{formatted}</div>;
+    },
+    size: 120
+  },
+  {
     accessorKey: 'createdAt',
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Data de Criação" />
