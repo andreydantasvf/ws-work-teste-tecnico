@@ -13,6 +13,16 @@ Este sistema permite o gerenciamento completo de carros, incluindo:
 - **Tema Customizável**: Suporte a modo claro e escuro
 - **Documentação Completa**: Storybook para componentes e Swagger para API
 
+## 📖 Aplicação No Ar
+
+Acesse a aplicação no ar:
+
+- **[Ws - AutoManager](https://ws-work-frontend.netlify.app/)** - Storybook com todos os componentes
+- **[API Documentation](https://ws-work-teste-tecnico.onrender.com/docs)** - Swagger UI interativo
+- **[Component Library](https://ws-work-frontend.netlify.app/storybook)** - Storybook com todos os componentes
+- **[Backend README](./backend-nodejs/README.md)** - Documentação técnica da API
+- **[Frontend README](./frontend-reactjs/README.md)** - Documentação técnica da interface
+
 ## 🏗️ Arquitetura do Projeto
 
 ```
@@ -145,13 +155,6 @@ sh ./scripts/test-integration.sh
 cd frontend-reactjs
 npm run storybook  # Abre o Storybook em http://localhost:6006
 ```
-
-## 📖 Documentação
-
-- **[API Documentation](http://localhost:3333/docs)** - Swagger UI interativo
-- **[Component Library](http://localhost:6006)** - Storybook com todos os componentes
-- **[Backend README](./backend-nodejs/README.md)** - Documentação técnica da API
-- **[Frontend README](./frontend-reactjs/README.md)** - Documentação técnica da interface
 
 ## 🤝 Contribuindo
 
