@@ -1,6 +1,8 @@
 import { useState, useEffect, useCallback } from 'react';
 import { Car, Plus } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { Button } from '@/components/ui/button';
 import {
   Card,
@@ -37,6 +39,7 @@ import { useCars } from '@/hooks/use-cars';
 import { carService } from '@/services/car.service';
 import type { Car as CarType } from '@/types/car';
 import type { Model } from '@/types/model';
+import { carFormSchema, type CarFormData } from '@/schemas/car.schema';
 
 interface ModelWithBrand extends Model {
   brand_name?: string;
@@ -72,14 +75,6 @@ export function CarsPage() {
   const [carToDelete, setCarToDelete] = useState<CarType | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
-  const [formData, setFormData] = useState({
-    modelId: '',
-    year: '',
-    fuel: '',
-    numberOfPorts: '',
-    color: '',
-    value: ''
-  });
 
   // Fetch data using React Query hooks
   const { data: brands = [], isLoading: brandsLoading } = useBrands();
@@ -91,6 +86,18 @@ export function CarsPage() {
   } = useCars();
 
   const loading = brandsLoading || modelsLoading || carsLoading;
+
+  const form = useForm<CarFormData>({
+    resolver: zodResolver(carFormSchema),
+    defaultValues: {
+      color: '',
+      year: new Date().getFullYear(),
+      numberOfPorts: 4,
+      fuel: '',
+      value: 0,
+      modelId: 0
+    }
+  });
 
   const loadCarsWithDetails = useCallback(() => {
     // Enrich models with brand names
@@ -128,38 +135,21 @@ export function CarsPage() {
     return <PageSkeleton />;
   }
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSubmit = async (data: CarFormData) => {
     setIsSubmitting(true);
 
     try {
-      const carData = {
-        modelId: Number.parseInt(formData.modelId),
-        year: Number.parseInt(formData.year),
-        fuel: formData.fuel,
-        numberOfPorts: Number.parseInt(formData.numberOfPorts),
-        color: formData.color,
-        value: Number.parseFloat(formData.value)
-      };
-
       if (editingCar) {
-        await carService.updateCar(editingCar.id, carData);
+        await carService.updateCar(editingCar.id, data);
         toast.success('Carro atualizado com sucesso');
       } else {
-        await carService.createCar(carData);
+        await carService.createCar(data);
         toast.success('Carro criado com sucesso');
       }
 
       setDialogOpen(false);
       setEditingCar(null);
-      setFormData({
-        modelId: '',
-        year: '',
-        fuel: '',
-        numberOfPorts: '',
-        color: '',
-        value: ''
-      });
+      form.reset();
       refetchCars();
     } catch {
       toast.error('Falha ao salvar carro');
@@ -187,27 +177,18 @@ export function CarsPage() {
 
   const openEditDialog = (car: CarType) => {
     setEditingCar(car);
-    setFormData({
-      modelId: car.modelId.toString(),
-      year: car.year.toString(),
-      fuel: car.fuel,
-      numberOfPorts: car.numberOfPorts.toString(),
-      color: car.color,
-      value: car.value.toString()
-    });
+    form.setValue('modelId', car.modelId);
+    form.setValue('year', car.year);
+    form.setValue('fuel', car.fuel);
+    form.setValue('numberOfPorts', car.numberOfPorts);
+    form.setValue('color', car.color);
+    form.setValue('value', car.value);
     setDialogOpen(true);
   };
 
   const openCreateDialog = () => {
     setEditingCar(null);
-    setFormData({
-      modelId: '',
-      year: '',
-      fuel: '',
-      numberOfPorts: '',
-      color: '',
-      value: ''
-    });
+    form.reset();
     setDialogOpen(true);
   };
 
@@ -226,8 +207,6 @@ export function CarsPage() {
   const handleNavigateToModels = () => {
     navigate('/models');
   };
-
-  const currentYear = new Date().getFullYear();
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background to-muted/20">
@@ -347,35 +326,46 @@ export function CarsPage() {
                   : 'Preencha os dados do novo carro'}
               </DialogDescription>
             </DialogHeader>
-            <form onSubmit={handleSubmit}>
+            <form onSubmit={form.handleSubmit(handleSubmit)}>
               <div className="grid gap-6 py-4">
-                <div className="grid gap-3">
-                  <Label
-                    htmlFor="modelId"
-                    className="text-sm font-medium text-foreground"
-                  >
-                    Modelo
-                  </Label>
-                  <Select
-                    value={formData.modelId}
-                    onValueChange={(value) =>
-                      setFormData({ ...formData, modelId: value })
-                    }
-                    required
-                  >
-                    <SelectTrigger className="border-border/50 focus:border-primary bg-background/50">
-                      <SelectValue placeholder="Selecione um modelo" />
-                    </SelectTrigger>
-                    <SelectContent className="border-border/50 bg-card/95 backdrop-blur-xl">
-                      {models.map((model) => (
-                        <SelectItem key={model.id} value={model.id.toString()}>
-                          {model.brand_name} - {model.name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
                 <div className="grid grid-cols-2 gap-4">
+                  <div className="grid gap-3">
+                    <Label
+                      htmlFor="modelId"
+                      className="text-sm font-medium text-foreground"
+                    >
+                      Modelo
+                    </Label>
+                    <Select
+                      value={
+                        form.watch('modelId') > 0
+                          ? form.watch('modelId').toString()
+                          : ''
+                      }
+                      onValueChange={(value) =>
+                        form.setValue('modelId', Number(value))
+                      }
+                    >
+                      <SelectTrigger className="border-border/50 max-w-44 focus:border-primary bg-background/50">
+                        <SelectValue placeholder="Selecione um modelo" />
+                      </SelectTrigger>
+                      <SelectContent className="border-border/50 bg-card/95 backdrop-blur-xl">
+                        {models.map((model) => (
+                          <SelectItem
+                            key={model.id}
+                            value={model.id.toString()}
+                          >
+                            {model.brand_name} - {model.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    {form.formState.errors.modelId && (
+                      <p className="text-sm text-red-500">
+                        {form.formState.errors.modelId.message}
+                      </p>
+                    )}
+                  </div>
                   <div className="grid gap-3">
                     <Label
                       htmlFor="year"
@@ -386,16 +376,47 @@ export function CarsPage() {
                     <Input
                       id="year"
                       type="number"
-                      min="1900"
-                      max={currentYear + 1}
-                      value={formData.year}
-                      onChange={(e) =>
-                        setFormData({ ...formData, year: e.target.value })
-                      }
+                      min="1886"
+                      max={new Date().getFullYear() + 1}
+                      {...form.register('year', { valueAsNumber: true })}
                       placeholder="2024"
                       className="border-border/50 focus:border-primary bg-background/50"
-                      required
                     />
+                    {form.formState.errors.year && (
+                      <p className="text-sm text-red-500">
+                        {form.formState.errors.year.message}
+                      </p>
+                    )}
+                  </div>
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="grid gap-3">
+                    <Label
+                      htmlFor="fuel"
+                      className="text-sm font-medium text-foreground"
+                    >
+                      Combustível
+                    </Label>
+                    <Select
+                      value={form.watch('fuel') || ''}
+                      onValueChange={(value) => form.setValue('fuel', value)}
+                    >
+                      <SelectTrigger className="border-border/50 max-w-44 focus:border-primary bg-background/50">
+                        <SelectValue placeholder="Selecione o combustível" />
+                      </SelectTrigger>
+                      <SelectContent className="border-border/50 bg-card/95 backdrop-blur-xl">
+                        {FUEL_TYPES.map((fuel) => (
+                          <SelectItem key={fuel.value} value={fuel.value}>
+                            {fuel.label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    {form.formState.errors.fuel && (
+                      <p className="text-sm text-red-500">
+                        {form.formState.errors.fuel.message}
+                      </p>
+                    )}
                   </div>
                   <div className="grid gap-3">
                     <Label
@@ -405,11 +426,14 @@ export function CarsPage() {
                       Portas
                     </Label>
                     <Select
-                      value={formData.numberOfPorts}
-                      onValueChange={(value) =>
-                        setFormData({ ...formData, numberOfPorts: value })
+                      value={
+                        form.watch('numberOfPorts') > 0
+                          ? form.watch('numberOfPorts').toString()
+                          : ''
                       }
-                      required
+                      onValueChange={(value) =>
+                        form.setValue('numberOfPorts', Number(value))
+                      }
                     >
                       <SelectTrigger className="border-border/50 focus:border-primary bg-background/50">
                         <SelectValue placeholder="Portas" />
@@ -422,34 +446,14 @@ export function CarsPage() {
                         ))}
                       </SelectContent>
                     </Select>
+                    {form.formState.errors.numberOfPorts && (
+                      <p className="text-sm text-red-500">
+                        {form.formState.errors.numberOfPorts.message}
+                      </p>
+                    )}
                   </div>
                 </div>
-                <div className="grid gap-3">
-                  <Label
-                    htmlFor="fuel"
-                    className="text-sm font-medium text-foreground"
-                  >
-                    Combustível
-                  </Label>
-                  <Select
-                    value={formData.fuel}
-                    onValueChange={(value) =>
-                      setFormData({ ...formData, fuel: value })
-                    }
-                    required
-                  >
-                    <SelectTrigger className="border-border/50 focus:border-primary bg-background/50">
-                      <SelectValue placeholder="Selecione o combustível" />
-                    </SelectTrigger>
-                    <SelectContent className="border-border/50 bg-card/95 backdrop-blur-xl">
-                      {FUEL_TYPES.map((fuel) => (
-                        <SelectItem key={fuel.value} value={fuel.value}>
-                          {fuel.label}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
+
                 <div className="grid gap-3">
                   <Label
                     htmlFor="color"
@@ -459,14 +463,15 @@ export function CarsPage() {
                   </Label>
                   <Input
                     id="color"
-                    value={formData.color}
-                    onChange={(e) =>
-                      setFormData({ ...formData, color: e.target.value })
-                    }
+                    {...form.register('color')}
                     placeholder="Ex: Branco, Preto, Prata..."
                     className="border-border/50 focus:border-primary bg-background/50"
-                    required
                   />
+                  {form.formState.errors.color && (
+                    <p className="text-sm text-red-500">
+                      {form.formState.errors.color.message}
+                    </p>
+                  )}
                 </div>
                 <div className="grid gap-3">
                   <Label
@@ -480,14 +485,15 @@ export function CarsPage() {
                     type="number"
                     min="0"
                     step="0.01"
-                    value={formData.value}
-                    onChange={(e) =>
-                      setFormData({ ...formData, value: e.target.value })
-                    }
+                    {...form.register('value', { valueAsNumber: true })}
                     placeholder="Ex: 45000.50"
                     className="border-border/50 focus:border-primary bg-background/50"
-                    required
                   />
+                  {form.formState.errors.value && (
+                    <p className="text-sm text-red-500">
+                      {form.formState.errors.value.message}
+                    </p>
+                  )}
                 </div>
               </div>
               <DialogFooter className="gap-3">

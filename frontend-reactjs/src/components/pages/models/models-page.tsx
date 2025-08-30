@@ -1,6 +1,8 @@
 import { useState, useEffect, useCallback } from 'react';
 import { Wrench, Plus } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { Button } from '@/components/ui/button';
 import {
   Card,
@@ -35,6 +37,7 @@ import { useBrands } from '@/hooks/use-brands';
 import { useModels } from '@/hooks/use-models';
 import { modelService } from '@/services/model.service';
 import type { Model } from '@/types/model';
+import { modelFormSchema, type ModelFormData } from '@/schemas/model.schema';
 
 /**
  * Models page component
@@ -49,11 +52,6 @@ export function ModelsPage() {
   const [modelToDelete, setModelToDelete] = useState<Model | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
-  const [formData, setFormData] = useState({
-    name: '',
-    brandId: '',
-    fipeValue: ''
-  });
 
   // Fetch data using React Query hooks
   const { data: brands = [], isLoading: brandsLoading } = useBrands();
@@ -62,6 +60,15 @@ export function ModelsPage() {
     isLoading: modelsLoading,
     refetch: refetchModels
   } = useModels();
+
+  const form = useForm<ModelFormData>({
+    resolver: zodResolver(modelFormSchema),
+    defaultValues: {
+      name: '',
+      brandId: 0,
+      fipeValue: 0
+    }
+  });
 
   const loadModelsWithBrands = useCallback(() => {
     const modelsWithBrands = modelsData.map((model) => {
@@ -86,28 +93,21 @@ export function ModelsPage() {
     return <PageSkeleton />;
   }
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSubmit = async (data: ModelFormData) => {
     setIsSubmitting(true);
 
     try {
-      const modelData = {
-        name: formData.name,
-        brandId: Number.parseInt(formData.brandId),
-        fipeValue: Number.parseFloat(formData.fipeValue)
-      };
-
       if (editingModel) {
-        await modelService.updateModel(editingModel.id, modelData);
+        await modelService.updateModel(editingModel.id, data);
         toast.success('Modelo atualizado com sucesso');
       } else {
-        await modelService.createModel(modelData);
+        await modelService.createModel(data);
         toast.success('Modelo criado com sucesso');
       }
 
       setDialogOpen(false);
       setEditingModel(null);
-      setFormData({ name: '', brandId: '', fipeValue: '' });
+      form.reset();
       refetchModels();
     } catch {
       toast.error('Falha ao salvar modelo');
@@ -135,17 +135,15 @@ export function ModelsPage() {
 
   const openEditDialog = (model: Model) => {
     setEditingModel(model);
-    setFormData({
-      name: model.name,
-      brandId: model.brandId.toString(),
-      fipeValue: model.fipeValue.toString()
-    });
+    form.setValue('name', model.name);
+    form.setValue('brandId', model.brandId);
+    form.setValue('fipeValue', model.fipeValue);
     setDialogOpen(true);
   };
 
   const openCreateDialog = () => {
     setEditingModel(null);
-    setFormData({ name: '', brandId: '', fipeValue: '' });
+    form.reset();
     setDialogOpen(true);
   };
 
@@ -283,7 +281,7 @@ export function ModelsPage() {
                   : 'Preencha os dados do novo modelo'}
               </DialogDescription>
             </DialogHeader>
-            <form onSubmit={handleSubmit}>
+            <form onSubmit={form.handleSubmit(handleSubmit)}>
               <div className="grid gap-6 py-4">
                 <div className="grid gap-3">
                   <Label
@@ -294,14 +292,15 @@ export function ModelsPage() {
                   </Label>
                   <Input
                     id="name"
-                    value={formData.name}
-                    onChange={(e) =>
-                      setFormData({ ...formData, name: e.target.value })
-                    }
+                    {...form.register('name')}
                     placeholder="Ex: Civic, Corolla, Focus..."
                     className="border-border/50 focus:border-primary bg-background/50"
-                    required
                   />
+                  {form.formState.errors.name && (
+                    <p className="text-sm text-red-500">
+                      {form.formState.errors.name.message}
+                    </p>
+                  )}
                 </div>
                 <div className="grid gap-3">
                   <Label
@@ -311,11 +310,14 @@ export function ModelsPage() {
                     Marca
                   </Label>
                   <Select
-                    value={formData.brandId}
-                    onValueChange={(value) =>
-                      setFormData({ ...formData, brandId: value })
+                    value={
+                      form.watch('brandId') > 0
+                        ? form.watch('brandId').toString()
+                        : ''
                     }
-                    required
+                    onValueChange={(value) =>
+                      form.setValue('brandId', Number(value))
+                    }
                   >
                     <SelectTrigger className="border-border/50 focus:border-primary bg-background/50">
                       <SelectValue placeholder="Selecione uma marca" />
@@ -328,6 +330,11 @@ export function ModelsPage() {
                       ))}
                     </SelectContent>
                   </Select>
+                  {form.formState.errors.brandId && (
+                    <p className="text-sm text-red-500">
+                      {form.formState.errors.brandId.message}
+                    </p>
+                  )}
                 </div>
                 <div className="grid gap-3">
                   <Label
@@ -341,14 +348,15 @@ export function ModelsPage() {
                     type="number"
                     step="0.01"
                     min="0"
-                    value={formData.fipeValue}
-                    onChange={(e) =>
-                      setFormData({ ...formData, fipeValue: e.target.value })
-                    }
+                    {...form.register('fipeValue', { valueAsNumber: true })}
                     placeholder="Ex: 45000.00"
                     className="border-border/50 focus:border-primary bg-background/50"
-                    required
                   />
+                  {form.formState.errors.fipeValue && (
+                    <p className="text-sm text-red-500">
+                      {form.formState.errors.fipeValue.message}
+                    </p>
+                  )}
                 </div>
               </div>
               <DialogFooter className="gap-3">

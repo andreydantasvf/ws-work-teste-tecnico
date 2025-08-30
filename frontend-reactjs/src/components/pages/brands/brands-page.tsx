@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Building2, Plus } from 'lucide-react';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { Button } from '@/components/ui/button';
 import {
   Card,
@@ -26,8 +28,9 @@ import { toast } from 'sonner';
 import { useBrands } from '@/hooks/use-brands';
 import { brandService } from '@/services/brand.service';
 import { useQueryClient } from '@tanstack/react-query';
-import type { Brand, CreateBrandPayload } from '@/types/brand';
+import type { Brand } from '@/types/brand';
 import { createBrandsColumns } from './brands-columns';
+import { brandFormSchema, type BrandFormData } from '@/schemas/brand.schema';
 
 /**
  * Brands management page component
@@ -39,28 +42,33 @@ export function BrandsPage() {
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [editingBrand, setEditingBrand] = useState<Brand | null>(null);
   const [brandToDelete, setBrandToDelete] = useState<Brand | null>(null);
-  const [formData, setFormData] = useState<CreateBrandPayload>({ name: '' });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
 
   const queryClient = useQueryClient();
   const { data: brands = [], isLoading } = useBrands();
 
+  const form = useForm<BrandFormData>({
+    resolver: zodResolver(brandFormSchema),
+    defaultValues: {
+      name: ''
+    }
+  });
+
   // Show skeleton while loading
   if (isLoading) {
     return <PageSkeleton />;
   }
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSubmit = async (data: BrandFormData) => {
     setIsSubmitting(true);
 
     try {
       if (editingBrand) {
-        await brandService.updateBrand(editingBrand.id, formData);
+        await brandService.updateBrand(editingBrand.id, data);
         toast.success('Marca atualizada com sucesso');
       } else {
-        await brandService.createBrand(formData);
+        await brandService.createBrand(data);
         toast.success('Marca criada com sucesso');
       }
 
@@ -69,7 +77,7 @@ export function BrandsPage() {
 
       setDialogOpen(false);
       setEditingBrand(null);
-      setFormData({ name: '' });
+      form.reset();
     } catch {
       toast.error('Falha ao salvar marca');
     } finally {
@@ -99,13 +107,13 @@ export function BrandsPage() {
 
   const openEditDialog = (brand: Brand) => {
     setEditingBrand(brand);
-    setFormData({ name: brand.name });
+    form.setValue('name', brand.name);
     setDialogOpen(true);
   };
 
   const openCreateDialog = () => {
     setEditingBrand(null);
-    setFormData({ name: '' });
+    form.reset();
     setDialogOpen(true);
   };
 
@@ -197,7 +205,7 @@ export function BrandsPage() {
                   : 'Preencha os dados da nova marca'}
               </DialogDescription>
             </DialogHeader>
-            <form onSubmit={handleSubmit}>
+            <form onSubmit={form.handleSubmit(handleSubmit)}>
               <div className="grid gap-6 py-4">
                 <div className="grid gap-3">
                   <Label
@@ -208,12 +216,15 @@ export function BrandsPage() {
                   </Label>
                   <Input
                     id="name"
-                    value={formData.name}
-                    onChange={(e) => setFormData({ name: e.target.value })}
+                    {...form.register('name')}
                     placeholder="Ex: Toyota, Honda, Ford..."
                     className="border-border/50 focus:border-primary bg-background/50"
-                    required
                   />
+                  {form.formState.errors.name && (
+                    <p className="text-sm text-red-500">
+                      {form.formState.errors.name.message}
+                    </p>
+                  )}
                 </div>
               </div>
               <DialogFooter className="gap-3">
