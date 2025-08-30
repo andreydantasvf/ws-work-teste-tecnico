@@ -134,7 +134,7 @@ export function DashboardPage() {
                 </div>
                 <div>
                   <h1 className="text-2xl font-bold bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text text-transparent">
-                    AutoManager
+                    WS - AutoManager
                   </h1>
                   <p className="text-xs text-muted-foreground">
                     Sistema de Gestão Automotiva
