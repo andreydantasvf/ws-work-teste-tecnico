@@ -5,7 +5,10 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc -b && vite build",
+    "build": "tsc -b && vite build && npm run build-storybook",
+    "build:app": "tsc -b && vite build",
+    "build:storybook": "storybook build",
+    "build:combined": "npm run build:app && npm run build:storybook && npm run copy-storybook",
     "lint": "eslint .",
     "preview": "vite preview",
     "storybook": "storybook dev -p 6006",

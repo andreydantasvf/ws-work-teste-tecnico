@@ -1,0 +1,13 @@
+[build]
+  command = "npm run build:combined"
+  publish = "dist"
+
+[[redirects]]
+  from = "/storybook/*"
+  to = "/storybook/:splat"
+  status = 200
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
