@@ -1,0 +1,145 @@
+# Sistema de Componentes UI
+
+Bem-vindo à documentação dos componentes reutilizáveis do nosso frontend. Esta biblioteca contém todos os componentes base que utilizamos em nosso sistema de gestão de carros, marcas e modelos.
+
+## 🎨 Design System
+
+Nossos componentes são baseados no **shadcn/ui** e utilizam:
+
+- **Radix UI** - Para componentes acessíveis e robustos
+- **Tailwind CSS** - Para estilização consistente
+- **Class Variance Authority (CVA)** - Para variantes de componentes
+- **Lucide React** - Para ícones
+- **Framer Motion** - Para animações
+
+## 📚 Componentes Disponíveis
+
+### Básicos
+
+- **Button** - Botões com múltiplas variantes e tamanhos
+- **Input** - Campos de entrada com validação
+- **Label** - Labels acessíveis para formulários
+- **Badge** - Badges para status e categorias
+
+### Feedback
+
+- **Skeleton** - Estados de carregamento
+- **ConfirmDeleteModal** - Modal de confirmação para exclusões
+
+### Navegação
+
+- **DropdownMenu** - Menus dropdown contextuais
+- **Select** - Seleção de opções
+
+### Layout
+
+- **Card** - Containers para conteúdo
+- **Table** - Tabelas de dados
+- **Dialog** - Modais e dialogs
+
+### Controles
+
+- **Switch** - Toggle switches
+
+## 🚀 Como Usar
+
+Cada componente está documentado com:
+
+- **Propriedades disponíveis** - Todas as props e suas descrições
+- **Variantes** - Diferentes estilos e tamanhos
+- **Exemplos práticos** - Casos de uso comuns
+- **Estados** - Loading, disabled, error, etc.
+- **Acessibilidade** - Considerações de a11y
+
+## 🎯 Padrões de Design
+
+### Cores e Variantes
+
+- **Default** - Estilo padrão do componente
+- **Destructive** - Para ações perigosas (exclusões)
+- **Outline** - Versão com borda
+- **Secondary** - Estilo secundário
+- **Ghost** - Versão minimalista
+
+### Tamanhos
+
+- **Small (sm)** - Para espaços compactos
+- **Default** - Tamanho padrão
+- **Large (lg)** - Para destaque
+
+### Estados
+
+- **Default** - Estado normal
+- **Hover** - Ao passar o mouse
+- **Active** - Quando ativado
+- **Disabled** - Quando desabilitado
+- **Loading** - Durante carregamento
+
+## 🛠️ Desenvolvimento
+
+### Estrutura dos Componentes
+
+```tsx
+// Exemplo de estrutura típica
+const ComponentName = React.forwardRef<HTMLElement, ComponentProps>(
+  ({ className, variant, size, ...props }, ref) => {
+    return (
+      <Element
+        className={cn(componentVariants({ variant, size }), className)}
+        ref={ref}
+        {...props}
+      />
+    );
+  }
+);
+```
+
+### Adicionando Novos Componentes
+
+1. Crie o componente em `src/components/ui/`
+2. Defina as variantes com CVA
+3. Implemente acessibilidade
+4. Adicione testes
+5. Documente no Storybook
+
+## 📱 Responsividade
+
+Todos os componentes são responsivos e seguem os breakpoints do Tailwind:
+
+- **sm**: 640px
+- **md**: 768px
+- **lg**: 1024px
+- **xl**: 1280px
+- **2xl**: 1536px
+
+## ♿ Acessibilidade
+
+Seguimos as diretrizes WCAG 2.1 AA:
+
+- Contraste adequado de cores
+- Navegação por teclado
+- Screen readers compatíveis
+- ARIA labels apropriados
+- Estados de foco visíveis
+
+## 🧪 Testes
+
+Cada componente pode ser testado através:
+
+- **Visual** - Stories no Storybook
+- **Interação** - Testes de comportamento
+- **Acessibilidade** - Addon a11y do Storybook
+
+## 🤝 Contribuindo
+
+Para contribuir com novos componentes ou melhorias:
+
+1. Siga os padrões existentes
+2. Documente adequadamente
+3. Teste em diferentes estados
+4. Verifique acessibilidade
+5. Adicione stories completas
+
+---
+
+_Esta documentação é atualizada automaticamente com cada componente adicionado._
