@@ -90,7 +90,7 @@ Siga os passos abaixo para configurar e executar o ambiente de desenvolvimento l
 
 ### Pré-requisitos
 
-- **Node.js**: v18 ou superior
+- **Node.js**: v22.18 ou superior
 - **Docker** e **Docker Compose**
 - **NPM** (ou um gerenciador de pacotes de sua preferência)
 
@@ -216,3 +216,17 @@ Abaixo está um resumo dos principais endpoints disponíveis. Para detalhes sobr
 | `GET`    | `/api/cars/:id`          | Busca um carro por ID.                                       |
 | `PUT`    | `/api/cars/:id`          | Atualiza um carro.                                           |
 | `DELETE` | `/api/cars/:id`          | Deleta um carro.                                             |
+
+---
+
+## Links Relacionados
+
+- **[🎨 Frontend - Interface Web](../frontend-reactjs/README.md)** - Aplicação React com interface completa
+- **[🏠 Projeto Principal](../../)** - Raiz do repositório
+- **[📖 Swagger Documentation](http://localhost:3333/docs)** - Documentação interativa da API
+- **[🔗 API Base URL](http://localhost:3333)** - Endpoint base da API (desenvolvimento)
+- **[⚙️ Configuração Docker](../../docker-compose.yml)** - Setup completo com Docker
+
+---
+
+**Desenvolvido com ❤️ usando Node.js + TypeScript + Fastify + Prisma**
