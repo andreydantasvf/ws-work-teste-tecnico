@@ -19,6 +19,7 @@ import {
 import { useBrands } from '@/hooks/use-brands';
 import { useModels } from '@/hooks/use-models';
 import { useCars } from '@/hooks/use-cars';
+import { formatCompactCurrency } from '@/lib/utils';
 import type { Car as CarType } from '@/types/car';
 
 interface DashboardStats {
@@ -26,6 +27,10 @@ interface DashboardStats {
   totalModels: number;
   totalCars: number;
   recentCars: Array<CarType & { model_name?: string; brand_name?: string }>;
+  totalFleetValue: number;
+  averageCarValue: number;
+  mostExpensiveCar: number;
+  cheapestCar: number;
 }
 
 /**
@@ -38,7 +43,11 @@ export function DashboardPage() {
     totalBrands: 0,
     totalModels: 0,
     totalCars: 0,
-    recentCars: []
+    recentCars: [],
+    totalFleetValue: 0,
+    averageCarValue: 0,
+    mostExpensiveCar: 0,
+    cheapestCar: 0
   });
 
   // Fetch data using React Query hooks
@@ -70,11 +79,26 @@ export function DashboardPage() {
           };
         });
 
+      // Calculate value statistics
+      const carValues = cars
+        .map((car) => car.value)
+        .filter((value) => value > 0);
+      const totalFleetValue = carValues.reduce((sum, value) => sum + value, 0);
+      const averageCarValue =
+        carValues.length > 0 ? totalFleetValue / carValues.length : 0;
+      const mostExpensiveCar =
+        carValues.length > 0 ? Math.max(...carValues) : 0;
+      const cheapestCar = carValues.length > 0 ? Math.min(...carValues) : 0;
+
       setStats({
         totalBrands: brands.length,
         totalModels: models.length,
         totalCars: cars.length,
-        recentCars
+        recentCars,
+        totalFleetValue,
+        averageCarValue,
+        mostExpensiveCar,
+        cheapestCar
       });
     } catch {
       // Error handling
@@ -311,8 +335,13 @@ export function DashboardPage() {
                                   <span>{car.color}</span>
                                   <span>{car.numberOfPorts} portas</span>
                                 </div>
-                                <div className="text-xs opacity-75">
-                                  Cadastrado em {formatDate(car.createdAt)}
+                                <div className="flex items-center justify-between">
+                                  <span className="text-xs opacity-75">
+                                    Cadastrado em {formatDate(car.createdAt)}
+                                  </span>
+                                  <span className="text-sm font-semibold text-primary">
+                                    {formatCompactCurrency(car.value)}
+                                  </span>
                                 </div>
                               </div>
                             </div>
@@ -364,14 +393,10 @@ export function DashboardPage() {
                       <div className="group p-4 rounded-xl bg-gradient-to-r from-blue-500/5 to-blue-600/5 border border-blue-500/20 hover:from-blue-500/10 hover:to-blue-600/10 transition-all duration-200">
                         <div className="flex justify-between items-center">
                           <span className="text-sm font-medium text-foreground">
-                            Média de modelos por marca
+                            Valor total da frota
                           </span>
                           <span className="text-2xl font-bold text-blue-600 dark:text-blue-400">
-                            {stats.totalBrands > 0
-                              ? Math.round(
-                                  (stats.totalModels / stats.totalBrands) * 10
-                                ) / 10
-                              : 0}
+                            {formatCompactCurrency(stats.totalFleetValue)}
                           </span>
                         </div>
                       </div>
@@ -379,14 +404,10 @@ export function DashboardPage() {
                       <div className="group p-4 rounded-xl bg-gradient-to-r from-green-500/5 to-green-600/5 border border-green-500/20 hover:from-green-500/10 hover:to-green-600/10 transition-all duration-200">
                         <div className="flex justify-between items-center">
                           <span className="text-sm font-medium text-foreground">
-                            Média de carros por modelo
+                            Valor médio por veículo
                           </span>
                           <span className="text-2xl font-bold text-green-600 dark:text-green-400">
-                            {stats.totalModels > 0
-                              ? Math.round(
-                                  (stats.totalCars / stats.totalModels) * 10
-                                ) / 10
-                              : 0}
+                            {formatCompactCurrency(stats.averageCarValue)}
                           </span>
                         </div>
                       </div>
@@ -394,28 +415,24 @@ export function DashboardPage() {
                       <div className="group p-4 rounded-xl bg-gradient-to-r from-purple-500/5 to-purple-600/5 border border-purple-500/20 hover:from-purple-500/10 hover:to-purple-600/10 transition-all duration-200">
                         <div className="flex justify-between items-center">
                           <span className="text-sm font-medium text-foreground">
-                            Total de registros
+                            Veículo mais caro
                           </span>
                           <span className="text-2xl font-bold text-purple-600 dark:text-purple-400">
-                            {stats.totalBrands +
-                              stats.totalModels +
-                              stats.totalCars}
+                            {formatCompactCurrency(stats.mostExpensiveCar)}
                           </span>
                         </div>
                       </div>
 
-                      {stats.recentCars.length > 0 && (
-                        <div className="group p-4 rounded-xl bg-gradient-to-r from-orange-500/5 to-orange-600/5 border border-orange-500/20 hover:from-orange-500/10 hover:to-orange-600/10 transition-all duration-200">
-                          <div className="flex justify-between items-center">
-                            <span className="text-sm font-medium text-foreground">
-                              Último cadastro
-                            </span>
-                            <span className="text-sm font-semibold text-orange-600 dark:text-orange-400">
-                              {formatDate(stats.recentCars[0].createdAt)}
-                            </span>
-                          </div>
+                      <div className="group p-4 rounded-xl bg-gradient-to-r from-orange-500/5 to-orange-600/5 border border-orange-500/20 hover:from-orange-500/10 hover:to-orange-600/10 transition-all duration-200">
+                        <div className="flex justify-between items-center">
+                          <span className="text-sm font-medium text-foreground">
+                            Veículo mais barato
+                          </span>
+                          <span className="text-2xl font-bold text-orange-600 dark:text-orange-400">
+                            {formatCompactCurrency(stats.cheapestCar)}
+                          </span>
                         </div>
-                      )}
+                      </div>
                     </div>
                   )}
                 </CardContent>
