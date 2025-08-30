@@ -17,7 +17,7 @@ Este sistema permite o gerenciamento completo de carros, incluindo:
 
 Acesse a aplicação no ar:
 
-- **[Ws - AutoManager](https://ws-work-frontend.netlify.app/)** - Storybook com todos os componentes
+- **[Ws - AutoManager](https://ws-work-frontend.netlify.app/)** - Aplicação completa
 - **[API Documentation](https://ws-work-teste-tecnico.onrender.com/docs)** - Swagger UI interativo
 - **[Component Library](https://ws-work-frontend.netlify.app/storybook)** - Storybook com todos os componentes
 - **[Backend README](./backend-nodejs/README.md)** - Documentação técnica da API
