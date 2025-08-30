@@ -38,6 +38,7 @@ model Cars {
   fuel          String
   numberOfPorts Int      @map("number_of_ports")
   color         String
+  value         Float
   createdAt     DateTime @default(now()) @map("created_at")
   updatedAt     DateTime @updatedAt @map("updated_at")
 
