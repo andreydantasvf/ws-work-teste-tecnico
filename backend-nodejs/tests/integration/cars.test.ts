@@ -10,6 +10,7 @@ interface CarResponse {
   year: number;
   numberOfPorts: number;
   fuel: string;
+  value: number;
   modelId: number;
   model: {
     brand: {
@@ -68,6 +69,7 @@ describe('Cars Endpoints Integration Tests', () => {
             year: 2020,
             numberOfPorts: 4,
             fuel: 'Gasolina',
+            value: 45000.5,
             modelId: testModel.id
           },
           {
@@ -75,6 +77,7 @@ describe('Cars Endpoints Integration Tests', () => {
             year: 2021,
             numberOfPorts: 2,
             fuel: 'Etanol',
+            value: 38000.0,
             modelId: testModel.id
           },
           {
@@ -82,6 +85,7 @@ describe('Cars Endpoints Integration Tests', () => {
             year: 2019,
             numberOfPorts: 4,
             fuel: 'Flex',
+            value: 42000.75,
             modelId: testModel.id
           }
         ]
@@ -105,6 +109,7 @@ describe('Cars Endpoints Integration Tests', () => {
           year: 2022,
           numberOfPorts: 4,
           fuel: 'Gasolina',
+          value: 55000.0,
           modelId: testModel.id
         }
       });
@@ -118,6 +123,7 @@ describe('Cars Endpoints Integration Tests', () => {
       expect(response.body.data[0]).toHaveProperty('year');
       expect(response.body.data[0]).toHaveProperty('numberOfPorts');
       expect(response.body.data[0]).toHaveProperty('fuel');
+      expect(response.body.data[0]).toHaveProperty('value');
       expect(response.body.data[0]).toHaveProperty('modelId');
     });
   });
@@ -130,6 +136,7 @@ describe('Cars Endpoints Integration Tests', () => {
           year: 2023,
           numberOfPorts: 4,
           fuel: 'Gasolina',
+          value: 60000.0,
           modelId: testModel.id
         }
       });
@@ -145,6 +152,7 @@ describe('Cars Endpoints Integration Tests', () => {
       expect(response.body.data.year).toBe(2023);
       expect(response.body.data.numberOfPorts).toBe(4);
       expect(response.body.data.fuel).toBe('Gasolina');
+      expect(response.body.data.value).toBe(60000.0);
       expect(response.body.data.modelId).toBe(testModel.id);
     });
 
@@ -177,6 +185,7 @@ describe('Cars Endpoints Integration Tests', () => {
         year: 2021,
         numberOfPorts: 4,
         fuel: 'Flex',
+        value: 52000.0,
         modelId: testModel.id
       };
 
@@ -191,6 +200,7 @@ describe('Cars Endpoints Integration Tests', () => {
       expect(response.body.data.year).toBe(2021);
       expect(response.body.data.numberOfPorts).toBe(4);
       expect(response.body.data.fuel).toBe('Flex');
+      expect(response.body.data.value).toBe(52000.0);
       expect(response.body.data.modelId).toBe(testModel.id);
       expect(response.body.data.id).toBeDefined();
 
@@ -209,6 +219,7 @@ describe('Cars Endpoints Integration Tests', () => {
           year: 2021,
           numberOfPorts: 4,
           fuel: 'Gasolina',
+          value: 30000.0,
           modelId: testModel.id
         })
         .expect(400);
@@ -300,7 +311,8 @@ describe('Cars Endpoints Integration Tests', () => {
           year: 2021,
           numberOfPorts: 4,
           fuel: 'Gasolina',
-          modelId: 999999
+          modelId: 999999,
+          value: 50000.0
         })
         .expect(500);
     });
@@ -340,6 +352,34 @@ describe('Cars Endpoints Integration Tests', () => {
         .expect(400);
     });
 
+    it('deve rejeitar valor negativo', async () => {
+      await request(app.server)
+        .post('/api/cars')
+        .send({
+          color: 'Azul',
+          year: 2021,
+          numberOfPorts: 4,
+          fuel: 'Gasolina',
+          value: -1000.0,
+          modelId: testModel.id
+        })
+        .expect(400);
+    });
+
+    it('deve rejeitar valor zero', async () => {
+      await request(app.server)
+        .post('/api/cars')
+        .send({
+          color: 'Azul',
+          year: 2021,
+          numberOfPorts: 4,
+          fuel: 'Gasolina',
+          value: 0,
+          modelId: testModel.id
+        })
+        .expect(400);
+    });
+
     it('deve aceitar cores com caracteres especiais válidos', async () => {
       const response = await request(app.server)
         .post('/api/cars')
@@ -348,6 +388,7 @@ describe('Cars Endpoints Integration Tests', () => {
           year: 2021,
           numberOfPorts: 4,
           fuel: 'Gasolina',
+          value: 47000.0,
           modelId: testModel.id
         })
         .expect(201);
@@ -363,6 +404,7 @@ describe('Cars Endpoints Integration Tests', () => {
           year: 2021,
           numberOfPorts: 4,
           fuel: '  Etanol  ',
+          value: 33000.0,
           modelId: testModel.id
         })
         .expect(201);
@@ -380,6 +422,7 @@ describe('Cars Endpoints Integration Tests', () => {
           year: 2020,
           numberOfPorts: 2,
           fuel: 'Gasolina',
+          value: 35000.0,
           modelId: testModel.id
         }
       });
@@ -389,6 +432,7 @@ describe('Cars Endpoints Integration Tests', () => {
         year: 2022,
         numberOfPorts: 4,
         fuel: 'Flex',
+        value: 55000.0,
         modelId: testModel.id
       };
 
@@ -403,6 +447,7 @@ describe('Cars Endpoints Integration Tests', () => {
       expect(response.body.data.year).toBe(2022);
       expect(response.body.data.numberOfPorts).toBe(4);
       expect(response.body.data.fuel).toBe('Flex');
+      expect(response.body.data.value).toBe(55000.0);
       expect(response.body.data.id).toBe(car.id);
 
       const updatedCar = await prisma.cars.findUnique({
@@ -420,7 +465,8 @@ describe('Cars Endpoints Integration Tests', () => {
           year: 2021,
           numberOfPorts: 4,
           fuel: 'Gasolina',
-          modelId: testModel.id
+          modelId: testModel.id,
+          value: 50000.0
         })
         .expect(404);
 
@@ -435,6 +481,7 @@ describe('Cars Endpoints Integration Tests', () => {
           year: 2020,
           numberOfPorts: 4,
           fuel: 'Gasolina',
+          value: 40000.0,
           modelId: testModel.id
         }
       });
@@ -458,6 +505,7 @@ describe('Cars Endpoints Integration Tests', () => {
           year: 2020,
           numberOfPorts: 4,
           fuel: 'Gasolina',
+          value: 48000.0,
           modelId: testModel.id
         }
       });
@@ -489,6 +537,7 @@ describe('Cars Endpoints Integration Tests', () => {
           year: 2020,
           numberOfPorts: 4,
           fuel: 'Gasolina',
+          value: 32000.0,
           modelId: testModel.id
         }
       });
@@ -526,6 +575,7 @@ describe('Cars Endpoints Integration Tests', () => {
           year: 2020,
           numberOfPorts: 4,
           fuel: 'Gasolina',
+          value: 29000.0,
           modelId: testModel.id
         }
       });
@@ -590,7 +640,8 @@ describe('Cars Endpoints Integration Tests', () => {
               year: 2020 + i,
               numberOfPorts: 4,
               fuel: 'Gasolina',
-              modelId: testModel.id
+              modelId: testModel.id,
+              value: 30000.0
             })
         );
       }
@@ -612,6 +663,7 @@ describe('Cars Endpoints Integration Tests', () => {
         year: 2020,
         numberOfPorts: 4,
         fuel: 'Gasolina',
+        value: 25000.0 + i * 1000,
         modelId: testModel.id
       }));
 
@@ -637,7 +689,8 @@ describe('Cars Endpoints Integration Tests', () => {
           year: 1886,
           numberOfPorts: 2,
           fuel: 'Gasolina',
-          modelId: testModel.id
+          modelId: testModel.id,
+          value: 30000.0
         })
         .expect(201);
 
@@ -655,7 +708,8 @@ describe('Cars Endpoints Integration Tests', () => {
             year: 2021,
             numberOfPorts: ports,
             fuel: 'Gasolina',
-            modelId: testModel.id
+            modelId: testModel.id,
+            value: 30000.0
           })
           .expect(201);
 
@@ -669,6 +723,7 @@ describe('Cars Endpoints Integration Tests', () => {
         year: 2021,
         numberOfPorts: 4,
         fuel: 'Gasolina',
+        value: 46000.0,
         modelId: testModel.id
       };
 
@@ -725,6 +780,7 @@ describe('Cars Endpoints Integration Tests', () => {
             year: 2020,
             numberOfPorts: 4,
             fuel: 'Gasolina',
+            value: 50000.0,
             modelId: testModel.id
           },
           {
@@ -732,6 +788,7 @@ describe('Cars Endpoints Integration Tests', () => {
             year: 2021,
             numberOfPorts: 2,
             fuel: 'Etanol',
+            value: 45000.0,
             modelId: testModel.id
           },
           {
@@ -739,6 +796,7 @@ describe('Cars Endpoints Integration Tests', () => {
             year: 2022,
             numberOfPorts: 4,
             fuel: 'Flex',
+            value: 65000.0,
             modelId: anotherModel.id
           },
           {
@@ -746,6 +804,7 @@ describe('Cars Endpoints Integration Tests', () => {
             year: 2019,
             numberOfPorts: 4,
             fuel: 'Gasolina',
+            value: 40000.0,
             modelId: testModel.id
           },
           {
@@ -753,6 +812,7 @@ describe('Cars Endpoints Integration Tests', () => {
             year: 2023,
             numberOfPorts: 2,
             fuel: 'Híbrido',
+            value: 70000.0,
             modelId: anotherModel.id
           }
         ]

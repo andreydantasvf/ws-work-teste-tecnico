@@ -102,6 +102,9 @@ export class CarsRepository implements ICarRepository {
         yearLte,
         fuel,
         numberOfPorts,
+        value,
+        valueGte,
+        valueLte,
         modelId,
         brandName,
         sortBy = 'id',
@@ -127,6 +130,14 @@ export class CarsRepository implements ICarRepository {
       if (fuel)
         whereConditions.push({ fuel: { contains: fuel, mode: 'insensitive' } });
       if (numberOfPorts) whereConditions.push({ numberOfPorts });
+      if (value) whereConditions.push({ value });
+      if (valueGte && valueLte) {
+        whereConditions.push({ value: { gte: valueGte, lte: valueLte } });
+      } else if (valueGte) {
+        whereConditions.push({ value: { gte: valueGte } });
+      } else if (valueLte) {
+        whereConditions.push({ value: { lte: valueLte } });
+      }
       if (modelId) whereConditions.push({ modelId });
       if (brandName) {
         whereConditions.push({
@@ -149,6 +160,8 @@ export class CarsRepository implements ICarRepository {
         orderBy = { fuel: order };
       } else if (sortBy === 'numberOfPorts') {
         orderBy = { numberOfPorts: order };
+      } else if (sortBy === 'value') {
+        orderBy = { value: order };
       } else {
         orderBy = { id: order };
       }

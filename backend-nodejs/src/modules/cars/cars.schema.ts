@@ -61,6 +61,10 @@ export const createCarSchema = z.object({
     .max(30, 'Tipo de combustível deve ter no máximo 30 caracteres')
     .transform(validateCarStringField)
     .describe('Tipo de combustível do carro. Exemplo: Gasolina'),
+  value: z
+    .number({ message: 'Valor do carro é obrigatório' })
+    .min(0.01, 'Valor do carro deve ser maior que zero')
+    .describe('Valor do carro em reais. Exemplo: 45000.50'),
   modelId: z
     .number({ message: 'ID do modelo é obrigatório' })
     .min(1, 'ID do modelo deve ser um número positivo')
@@ -93,6 +97,17 @@ export const carsQuerySchema = z.object({
     .min(1)
     .optional()
     .describe('Filtrar por número de portas'),
+  value: z.coerce.number().min(0).optional().describe('Filtrar por valor'),
+  valueGte: z.coerce
+    .number()
+    .min(0)
+    .optional()
+    .describe('Valor maior ou igual'),
+  valueLte: z.coerce
+    .number()
+    .min(0)
+    .optional()
+    .describe('Valor menor ou igual'),
   modelId: z.coerce
     .number()
     .min(1)
@@ -100,7 +115,7 @@ export const carsQuerySchema = z.object({
     .describe('Filtrar por ID do modelo'),
   brandName: z.string().optional().describe('Filtrar por nome da marca'),
   sortBy: z
-    .enum(['year', 'color', 'fuel', 'numberOfPorts'])
+    .enum(['year', 'color', 'fuel', 'numberOfPorts', 'value'])
     .optional()
     .describe('Campo para ordenação'),
   order: z.enum(['asc', 'desc']).optional().describe('Ordem da ordenação'),
@@ -127,6 +142,7 @@ export const carSchema = z.object({
   year: z.number().min(1886).describe('Ano de fabricação do carro'),
   numberOfPorts: z.number().min(1).describe('Número de portas do carro'),
   fuel: z.string().min(2).max(30).describe('Tipo de combustível do carro'),
+  value: z.number().min(0).describe('Valor do carro em reais'),
   modelId: z.number().min(1).describe('Identificador único do modelo'),
   createdAt: z.date().optional().describe('Data de criação do carro'),
   updatedAt: z.date().optional().describe('Data da última atualização'),

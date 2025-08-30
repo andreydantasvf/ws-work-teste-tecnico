@@ -4,6 +4,7 @@ export interface ICar {
   fuel: string;
   numberOfPorts: number;
   color: string;
+  value: number;
   modelId: number;
   createdAt?: Date;
   updatedAt?: Date;
@@ -20,9 +21,12 @@ export interface ICarsFilter {
   yearLte?: number;
   fuel?: string;
   numberOfPorts?: number;
+  value?: number;
+  valueGte?: number;
+  valueLte?: number;
   modelId?: number;
   brandName?: string;
-  sortBy?: 'year' | 'color' | 'fuel' | 'numberOfPorts';
+  sortBy?: 'year' | 'color' | 'fuel' | 'numberOfPorts' | 'value';
   order?: 'asc' | 'desc';
   page?: number;
   limit?: number;

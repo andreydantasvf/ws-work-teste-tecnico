@@ -689,7 +689,8 @@ describe('Models Endpoints Integration Tests', () => {
           fuel: 'Gasoline',
           numberOfPorts: 4,
           color: 'Red',
-          modelId: model.id
+          modelId: model.id,
+          value: 45000.0
         }
       });
 
