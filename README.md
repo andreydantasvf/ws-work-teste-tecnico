@@ -126,16 +126,6 @@ Para desenvolvimento, consulte os READMEs específicos:
 - [x] Filtros, ordenação e paginação
 - [x] Containerização com Docker
 
-### 🎯 Extras Implementados
-
-- [x] **Listagem de carros com filtros avançados**
-- [x] **Endpoint para buscar modelos por marca**
-- [x] **Design System completo com Storybook**
-- [x] **Interface responsiva e acessível**
-- [x] **Suporte a temas claro/escuro**
-- [x] **Animações e micro-interações**
-- [x] **Gerenciamento de estado otimizado**
-
 ## 📊 Screenshots
 
 <img src="./.github/print-dark.png" />
@@ -155,14 +145,6 @@ sh ./scripts/test-integration.sh
 cd frontend-reactjs
 npm run storybook  # Abre o Storybook em http://localhost:6006
 ```
-
-## 🤝 Contribuindo
-
-1. Faça um fork do projeto
-2. Crie uma branch para sua feature (`git checkout -b feature/nova-funcionalidade`)
-3. Commit suas mudanças (`git commit -m 'Adiciona nova funcionalidade'`)
-4. Push para a branch (`git push origin feature/nova-funcionalidade`)
-5. Abra um Pull Request
 
 ## 📄 Licença
 
