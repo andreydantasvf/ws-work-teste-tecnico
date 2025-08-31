@@ -55,7 +55,7 @@ export function DashboardPage() {
   const { data: models = [], isLoading: modelsLoading } = useModels();
   const { data: cars = [], isLoading: carsLoading } = useCars();
 
-  const loading = brandsLoading || modelsLoading || carsLoading || true;
+  const loading = brandsLoading || modelsLoading || carsLoading;
 
   const loadDashboardData = useCallback(() => {
     try {
