@@ -8,7 +8,7 @@ import './index.css';
 function App() {
   return (
     <QueryProvider>
-      <div className="fixed right-6 top-6 z-50">
+      <div className="fixed bottom-6 right-6 md:top-6 md:bottom-0 z-50">
         <ThemeToggle />
       </div>
       <div className="min-h-screen w-full bg-background text-foreground">

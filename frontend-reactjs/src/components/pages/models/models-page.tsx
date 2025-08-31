@@ -177,7 +177,7 @@ export function ModelsPage() {
               >
                 ← Voltar
               </Button>
-              <div className="flex items-center gap-3">
+              <div className="md:flex hidden items-center gap-3">
                 <div className="p-2 rounded-xl bg-green-500/10 border border-green-500/20">
                   <Wrench className="h-6 w-6 text-green-600 dark:text-green-400" />
                 </div>
@@ -270,7 +270,7 @@ export function ModelsPage() {
 
         {/* Create/Edit Dialog */}
         <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-          <DialogContent className="border-border/50 bg-card/95 backdrop-blur-xl">
+          <DialogContent className="md:max-w-md max-w-xs border-border/50 bg-card/95 backdrop-blur-xl">
             <DialogHeader>
               <DialogTitle className="text-xl font-semibold text-card-foreground">
                 {editingModel ? 'Editar Modelo' : 'Novo Modelo'}
@@ -319,7 +319,7 @@ export function ModelsPage() {
                       form.setValue('brandId', Number(value))
                     }
                   >
-                    <SelectTrigger className="border-border/50 focus:border-primary bg-background/50">
+                    <SelectTrigger className="border-border/50 w-full focus:border-primary bg-background/50">
                       <SelectValue placeholder="Selecione uma marca" />
                     </SelectTrigger>
                     <SelectContent className="border-border/50 bg-card/95 backdrop-blur-xl">

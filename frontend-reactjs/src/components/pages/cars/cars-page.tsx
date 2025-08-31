@@ -222,7 +222,7 @@ export function CarsPage() {
               >
                 ← Voltar
               </Button>
-              <div className="flex items-center gap-3">
+              <div className="md:flex hidden items-center gap-3">
                 <div className="p-2 rounded-xl bg-purple-500/10 border border-purple-500/20">
                   <Car className="h-6 w-6 text-purple-600 dark:text-purple-400" />
                 </div>
@@ -315,7 +315,7 @@ export function CarsPage() {
 
         {/* Create/Edit Dialog */}
         <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-          <DialogContent className="max-w-md border-border/50 bg-card/95 backdrop-blur-xl">
+          <DialogContent className="md:max-w-md max-w-xs border-border/50 bg-card/95 backdrop-blur-xl">
             <DialogHeader>
               <DialogTitle className="text-xl font-semibold text-card-foreground">
                 {editingCar ? 'Editar Carro' : 'Novo Carro'}
@@ -346,7 +346,7 @@ export function CarsPage() {
                         form.setValue('modelId', Number(value))
                       }
                     >
-                      <SelectTrigger className="border-border/50 max-w-44 focus:border-primary bg-background/50">
+                      <SelectTrigger className="border-border/50 max-w-32 md:max-w-44 focus:border-primary bg-background/50">
                         <SelectValue placeholder="Selecione um modelo" />
                       </SelectTrigger>
                       <SelectContent className="border-border/50 bg-card/95 backdrop-blur-xl">
@@ -401,7 +401,7 @@ export function CarsPage() {
                       value={form.watch('fuel') || ''}
                       onValueChange={(value) => form.setValue('fuel', value)}
                     >
-                      <SelectTrigger className="border-border/50 max-w-44 focus:border-primary bg-background/50">
+                      <SelectTrigger className="border-border/50 max-w-32 md:max-w-44 focus:border-primary bg-background/50">
                         <SelectValue placeholder="Selecione o combustível" />
                       </SelectTrigger>
                       <SelectContent className="border-border/50 bg-card/95 backdrop-blur-xl">
@@ -435,7 +435,7 @@ export function CarsPage() {
                         form.setValue('numberOfPorts', Number(value))
                       }
                     >
-                      <SelectTrigger className="border-border/50 focus:border-primary bg-background/50">
+                      <SelectTrigger className="border-border/50 w-full focus:border-primary bg-background/50">
                         <SelectValue placeholder="Portas" />
                       </SelectTrigger>
                       <SelectContent className="border-border/50 bg-card/95 backdrop-blur-xl">

@@ -146,7 +146,7 @@ export function BrandsPage() {
               >
                 ← Voltar
               </Button>
-              <div className="flex items-center gap-3">
+              <div className="md:flex hidden items-center gap-3">
                 <div className="p-2 rounded-xl bg-blue-500/10 border border-blue-500/20">
                   <Building2 className="h-6 w-6 text-blue-600 dark:text-blue-400" />
                 </div>
@@ -194,7 +194,7 @@ export function BrandsPage() {
 
         {/* Create/Edit Dialog */}
         <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-          <DialogContent className="border-border/50 bg-card/95 backdrop-blur-xl">
+          <DialogContent className="md:max-w-md max-w-xs border-border/50 bg-card/95 backdrop-blur-xl">
             <DialogHeader>
               <DialogTitle className="text-xl font-semibold text-card-foreground">
                 {editingBrand ? 'Editar Marca' : 'Nova Marca'}

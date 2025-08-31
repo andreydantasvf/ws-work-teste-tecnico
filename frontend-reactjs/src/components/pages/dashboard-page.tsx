@@ -55,7 +55,7 @@ export function DashboardPage() {
   const { data: models = [], isLoading: modelsLoading } = useModels();
   const { data: cars = [], isLoading: carsLoading } = useCars();
 
-  const loading = brandsLoading || modelsLoading || carsLoading;
+  const loading = brandsLoading || modelsLoading || carsLoading || true;
 
   const loadDashboardData = useCallback(() => {
     try {
@@ -175,8 +175,8 @@ export function DashboardPage() {
         {loading ? (
           <>
             <div className="mb-8 space-y-2">
-              <div className="animate-pulse bg-muted/50 h-10 w-64 rounded-lg"></div>
-              <div className="animate-pulse bg-muted/30 h-5 w-96 rounded-md"></div>
+              <div className="animate-pulse bg-muted/50 h-10 w-64 max-w-full rounded-lg"></div>
+              <div className="animate-pulse bg-muted/30 h-5 w-96 max-w-full rounded-md"></div>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
